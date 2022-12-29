@@ -1,6 +1,6 @@
 const MarioActions = {
     nothing: "nothing",
-    jumping: "jump",
+    jumping: "jumping",
     runningLeft: "runLeft",
     runningRight: "runRight",
 }
@@ -13,6 +13,7 @@ class Mario {
     xVelocity = 0;
     yVelocity = 0;
     action = []
+    debugCode = ""
 
     // Constructor to set up the initial state of Mario
     constructor(x, y) {
@@ -36,20 +37,25 @@ class Mario {
     isRunningLeft() {
         return this.action.includes(MarioActions.runningLeft)
     }
+
     isRunningRight() {
         return this.action.includes(MarioActions.runningRight)
     }
+
     isDoNothing() {
         return this.action === []
     }
+
     isJumping() {
         return this.action.includes(MarioActions.jumping)
     }
 
     // Method to move Mario based on his velocity
     move() {
-        this.x += this.xVelocity;
-        this.y += this.yVelocity;
+        if (this.xVelocity !== 0 || this.yVelocity !== 0) {
+            this.x += this.xVelocity;
+            this.y += this.yVelocity;
+        }
     }
 
     // Method to handle Mario's jumping behavior
