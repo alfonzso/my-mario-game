@@ -1,7 +1,20 @@
 // import Mario from "mario.cls.js"
 // import { Mario } from "./mario.cls"
-const mario = new Mario(0, 0);
+let oMario = new Mario(0, 0);
 const GRAVITY = 0.5;
+
+function choseSpriteImage(spriteSheet, frame, frameWidth) {
+    result = 0
+    const spirteX = oMario.xVelocity < 0 ? (spriteSheet.width - frameWidth) - (frame * frameWidth) : (frame * frameWidth)
+    if (oMario.isRunningLeft() || oMario.isRunningRight() || oMario.isDoNothing()) {
+        result = spirteX
+    }
+    if (oMario.isJumping()) {
+        result = oMario.xVelocity < 0 ? 635 : 465
+    }
+    console.log(result)
+    return result
+}
 
 window.onload = async () => {
 
@@ -32,8 +45,8 @@ window.onload = async () => {
 
         // Set up Mario
         // const mario = new Mario(0, 0);
-        mario.width = 113;
-        mario.height = 113;
+        oMario.width = 113;
+        oMario.height = 113;
 
         // Set up the animation variables
         let frame = 0;
@@ -49,94 +62,43 @@ window.onload = async () => {
             const elapsedTime = timestamp - lastFrameTime;
 
             // Update the animation frame if the interval has passed
-            if (mario.xVelocity !== 0 && elapsedTime > frameInterval) {
+            if (oMario.xVelocity !== 0 && elapsedTime > frameInterval) {
                 // Increment the frame
                 frame = (frame + 1) % numFrames;
                 // Reset the last frame time
                 lastFrameTime = timestamp;
-            } else if (mario.xVelocity === 0 && elapsedTime > frameInterval) {
+            } else if (oMario.xVelocity === 0 && elapsedTime > frameInterval) {
                 frame = 0
             }
 
-            mario.move()
+            oMario.move()
 
-            mario.yVelocity += GRAVITY;
-            if (mario.y + mario.height >= canvas.height) {
-                mario.y = canvas.height - mario.height;
-                mario.yVelocity = 0;
-                mario.doing = Doing.nothing
+            oMario.yVelocity += GRAVITY;
+            if (oMario.y + oMario.height >= canvas.height) {
+                oMario.y = canvas.height - oMario.height;
+                oMario.yVelocity = 0;
+                oMario.removeJumpAction()
             }
 
             // Clear the canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
             ctx.fillText(frame, 10, 50);
 
-            // ctx.save()
-            // ctx.scale(-1, 1);
-            spriteSheet = mario.xVelocity < 0 ? images[1] : images[0]
+            spriteSheet = oMario.xVelocity < 0 ? images[1] : images[0]
 
-            // const spirteX = 1085 - (frame * frameWidth)
-            // const spirteX = mario.xVelocity < 0 ? 1085 - (frame * frameWidth) : (frame * frameWidth)
-            // console.log(mario.xVelocity)
-            // console.log(spriteSheet.width - frameWidth)
-
-            ctx.fillText(mario.doing, 10, 60);
-
-            function choseSpriteImage(mario, spriteSheet, frame, frameWidth) {
-                const spirteX = mario.xVelocity < 0 ? (spriteSheet.width - frameWidth) - (frame * frameWidth) : (frame * frameWidth)
-                if (mario.doing === Doing.moving || mario.doing === Doing.nothing) {
-                    return spirteX
-                } else if (mario.doing === Doing.jumping) {
-                    return 465
-                }
-            }
+            ctx.fillText(oMario.action.join(', '), 10, 60);
 
             ctx.drawImage(
                 spriteSheet,
-                choseSpriteImage(mario, spriteSheet, frame, frameWidth), // x position of the frame on the sprite sheet
+                choseSpriteImage(spriteSheet, frame, frameWidth), // x position of the frame on the sprite sheet
                 175, // y position of the frame on the sprite sheet
                 frameWidth, // width of the frame
                 frameHeight, // height of the frame
-                mario.x, // x position on the canvas to draw the frame
-                mario.y, // y position on the canvas to draw the frame
-                mario.width, // width to draw the frame on the canvas
-                mario.height // height to draw the frame on the canvas
+                oMario.x, // x position on the canvas to draw the frame
+                oMario.y, // y position on the canvas to draw the frame
+                oMario.width, // width to draw the frame on the canvas
+                oMario.height // height to draw the frame on the canvas
             );
-
-            // // Draw the current frame of the animation
-            // if (mario.doing === Doing.moving || mario.doing === Doing.nothing) {
-            //     ctx.drawImage(
-            //         spriteSheet,
-            //         spirteX, // x position of the frame on the sprite sheet
-            //         175, // y position of the frame on the sprite sheet
-            //         frameWidth, // width of the frame
-            //         frameHeight, // height of the frame
-            //         mario.x, // x position on the canvas to draw the frame
-            //         mario.y, // y position on the canvas to draw the frame
-            //         mario.width, // width to draw the frame on the canvas
-            //         mario.height // height to draw the frame on the canvas
-            //     );
-            // } else if (mario.doing === Doing.jumping) {
-            //     ctx.drawImage(
-            //         spriteSheet,
-            //         465, // x position of the frame on the sprite sheet
-            //         175, // y position of the frame on the sprite sheet
-            //         frameWidth, // width of the frame
-            //         frameHeight, // height of the frame
-            //         mario.x, // x position on the canvas to draw the frame
-            //         mario.y, // y position on the canvas to draw the frame
-            //         mario.width, // width to draw the frame on the canvas
-            //         mario.height // height to draw the frame on the canvas
-            //     );
-            // }
-
-            // ctx.restore();
-
-            // ctx.save();
-
-            // console.log(mario.x, mario.y)
-            // console.log(frame * frameWidth)
 
             // Request the next frame of the game loop
             requestAnimationFrame(gameLoop);
@@ -146,51 +108,36 @@ window.onload = async () => {
         document.addEventListener("keydown", event => {
             if (event.code === "ArrowLeft") {
                 // Left arrow key pressed
-                mario.xVelocity = -5;
-                mario.doing = Doing.moving
-            } else if (event.code === "ArrowRight") {
+                oMario.addAction(MarioActions.runningLeft)
+                oMario.xVelocity = -5;
+            }
+            if (event.code === "ArrowRight") {
                 // Right arrow key pressed
-                mario.xVelocity = 5;
-                mario.doing = Doing.moving
-            } else if (event.code === "Space") {
+                oMario.addAction(MarioActions.runningRight)
+                oMario.xVelocity = 5;
+            }
+            if (event.code === "Space") {
                 // Space bar pressed
-                mario.jump();
-                mario.doing = Doing.jumping
+                oMario.jump();
+                oMario.addAction(MarioActions.jumping)
             }
         });
 
         document.addEventListener("keyup", event => {
-            if (event.code === "ArrowLeft" || event.code === "ArrowRight") {
+            if (event.code === "ArrowLeft") {
                 // Left or right arrow key released
-                mario.xVelocity = 0;
-                mario.doing = Doing.nothing
+                oMario.removeLeftOrRightAction(MarioActions.runningLeft)
+                oMario.xVelocity = 0;
+            }
+            if (event.code === "ArrowRight") {
+                // Left or right arrow key released
+                oMario.removeLeftOrRightAction(MarioActions.runningRight)
+                oMario.xVelocity = 0;
             }
         });
 
         // Start the game loop
         requestAnimationFrame(gameLoop);
     });
-    // Main game loop
-    // function gameLoop() {
-    //     // Update game state
-
-    //     // Move Mario
-    //     mario.move();
-
-    //     mario.yVelocity += GRAVITY;
-    //     if (mario.y + mario.height >= canvas.height) {
-    //         mario.y = canvas.height - mario.height;
-    //         mario.yVelocity = 0;
-    //     }
-
-    //     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    //     // Draw Mario
-    //     ctx.drawImage(marioImage, mario.x, mario.y, mario.width, mario.height);
-
-    //     // Redraw game screen
-    // }
-
-
 
 };

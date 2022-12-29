@@ -1,7 +1,8 @@
-const Doing = {
+const MarioActions = {
     nothing: "nothing",
     jumping: "jump",
-    moving: "run"
+    runningLeft: "runLeft",
+    runningRight: "runRight",
 }
 
 class Mario {
@@ -11,12 +12,38 @@ class Mario {
     height = 32 * 2;
     xVelocity = 0;
     yVelocity = 0;
-    doing = Doing.nothing
+    action = []
 
     // Constructor to set up the initial state of Mario
     constructor(x, y) {
         this.x = x;
         this.y = y;
+    }
+
+    addAction(doing) {
+        if (!this.action.includes(doing))
+            this.action.push(doing)
+    }
+
+    removeJumpAction() {
+        this.action = this.action.filter(item => item != MarioActions.jumping)
+    }
+
+    removeLeftOrRightAction(doing) {
+        this.action = this.action.filter(item => item != doing)
+    }
+
+    isRunningLeft() {
+        return this.action.includes(MarioActions.runningLeft)
+    }
+    isRunningRight() {
+        return this.action.includes(MarioActions.runningRight)
+    }
+    isDoNothing() {
+        return this.action === []
+    }
+    isJumping() {
+        return this.action.includes(MarioActions.jumping)
     }
 
     // Method to move Mario based on his velocity
