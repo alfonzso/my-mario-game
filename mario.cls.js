@@ -1,3 +1,8 @@
+const Doing = {
+    nothing: "nothing",
+    jumping: "jump",
+    moving: "run"
+}
 
 class Mario {
     x = 0;
@@ -6,6 +11,7 @@ class Mario {
     height = 32 * 2;
     xVelocity = 0;
     yVelocity = 0;
+    doing = Doing.nothing
 
     // Constructor to set up the initial state of Mario
     constructor(x, y) {
