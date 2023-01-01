@@ -13,7 +13,9 @@ class Mario {
     xVelocity = 0;
     yVelocity = 0;
     action = []
+    // oldAction = []
     debugCode = ""
+    xVelocityBeforeJump = 0
 
     // Constructor to set up the initial state of Mario
     constructor(x, y) {

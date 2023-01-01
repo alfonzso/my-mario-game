@@ -66,11 +66,23 @@ window.onload = async () => {
 
       oMario.move()
 
+      if (oMario.yVelocity < 0 || oMario.yVelocity > 0) {
+        if (oMario.xVelocityBeforeJump === 0) {
+          oMario.xVelocityBeforeJump = oMario.xVelocity
+        }
+        oMario.xVelocity = oMario.xVelocityBeforeJump
+      }
+
       oMario.yVelocity += GRAVITY;
       if (oMario.y + oMario.height >= canvas.height) {
-        oMario.y = canvas.height - oMario.height;
+
+        if (oMario.isJumping()) {
+          oMario.xVelocityBeforeJump = 0
+          oMario.xVelocity = 0
+          oMario.removeJumpAction()
+        }
         oMario.yVelocity = 0;
-        oMario.removeJumpAction()
+        oMario.y = canvas.height - oMario.height;
       }
 
       // Clear the canvas
@@ -83,6 +95,7 @@ window.onload = async () => {
         Mario X: ${oMario.x}
         Mario Y: ${oMario.y}
         Action: ${oMario.action.join(', ')}
+        DeltaV: X ${oMario.xVelocity} Y ${oMario.yVelocity} Yb ${oMario.xVelocityBeforeJump}
       `
       // ctx.fillText(debugMessage, 10, 50);
       fillTextMultiLine(ctx, debugMessage, 10, 50)
