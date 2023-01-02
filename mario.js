@@ -79,7 +79,7 @@ function startMarioGame() {
 
           if (oMario.isJumping()) {
             oMario.xVelocityBeforeJump = 0
-            if (!(oMario.isRunningLeft || oMario.isRunningRight)) {
+            if (!(oMario.isRunningLeft() || oMario.isRunningRight())) {
               oMario.xVelocity = 0
             }
             oMario.removeJumpAction()
