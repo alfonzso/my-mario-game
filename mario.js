@@ -39,9 +39,9 @@ function startMarioGame() {
       // console.log(redShapeCornerHashMap.length);
       // console.log(redShapeCornerHashMap[1400]);
 
-      console.log(new MyPixels(5, 5));
-      console.log(new MyPixels(5, 5) === new MyPixels(5, 5));
-      console.log(objDeepEqual(new MyPixels(5, 5), new MyPixels(5, 5)));
+      // console.log(new MyPixels(5, 5));
+      // console.log(new MyPixels(5, 5) === new MyPixels(5, 5));
+      // console.log(objDeepEqual(new MyPixels(5, 5), new MyPixels(5, 5)));
       // console.log(md5(JSON.stringify({ foo: 'bar' })));
 
       // const textAsBuffer = new TextEncoder().encode(JSON.stringify({ foo: 'bar' }));
@@ -53,16 +53,42 @@ function startMarioGame() {
       // console.log(redShapeCorner[1500]);
       // console.log(redShapeCorner[3000]);
       // redShapeCorner.map(v => console.log(v.x))
-      redShapeCorner.filter(v => v.x === 500).map(v => console.log(v))
+      // redShapeCorner.filter(v => v.x === 500).map(v => console.log(v))
+
+      function isYAxisNearShape(oMario, redShape, interval) {
+        return oMario.y + oMario.height >= redShape.y - interval && oMario.y + oMario.height <= redShape.y + interval
+      }
+      function isXAxisNearShape(oMario, redShape) {
+        return Math.trunc(oMario.x + (oMario.width / 2)) === redShape.x
+      }
 
       function isOnShape(oMario, redShapeCorner) {
+
         for (const redShape of redShapeCorner) {
-          if (oMario.y + oMario.height > redShape.y - 3 && oMario.y + oMario.height < redShape.y + 3 && Math.trunc(oMario.x + (oMario.width / 2)) === redShape.x) {
+          // fillTextMultiLine(ctx, `
+          //   oMario.y: ${oMario.y + oMario.height}
+          //   rSy: ${redShape.y}
+          // `, 1000, 50)
+          // if (frame % 4 === 0 && Math.trunc(oMario.x + (oMario.width / 2)) === redShape.x)
+          //   console.log(oMario.y + oMario.height, redShape.y);
+          if (isYAxisNearShape(oMario, redShape, 3) && isXAxisNearShape(oMario, redShape)) {
+            // console.log("kekkkkkk");
             return redShape
           }
         }
         return false
       }
+
+
+      // redShapeCorner.map(v => console.log(v))
+      // console.log(redShapeCorner.reduce((p, c) => (p.x | 0 )+ c.x));
+      // console.log(redShapeCorner.reduce((p, c) => p.x + c.x));
+
+      redShapeXAvg = redShapeCorner.map(v => v.x).reduce((p, c) => p + c) / redShapeCorner.length
+      redShapeYAvg = redShapeCorner.map(v => v.y).reduce((p, c) => p + c) / redShapeCorner.length
+
+      redShapeMin = redShapeCorner.filter(v => v.y < redShapeYAvg)
+      console.log(redShapeMin);
 
       function gameLoop(timestamp) {
         // Calculate the elapsed time since the last frame
@@ -87,6 +113,12 @@ function startMarioGame() {
           oMario.xVelocity = oMario.xVelocityBeforeJump
         }
 
+        // Clear the canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(images[2], 0, 0);
+
+        redShapeMin.map(shape => drawPixel(context, shape.x, shape.y, "black"))
+
         oMario.yVelocity += GRAVITY;
         let onShape = isOnShape(oMario, redShapeCorner)
         if (oMario.y + oMario.height >= canvas.height || onShape !== false) {
@@ -103,10 +135,10 @@ function startMarioGame() {
           oMario.y = (onShape !== false ? onShape.y : canvas.height) - oMario.height;
         }
 
-        // Clear the canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
         // debugMessage = JSON.stringify({
         debugMessage = `
+          redShapeXAvg: ${redShapeCorner.map(v => v.x).reduce((p, c) => p + c) / redShapeCorner.length}
+          redShapeYAvg: ${redShapeCorner.map(v => v.y).reduce((p, c) => p + c) / redShapeCorner.length}
           code: ${oMario.debugCode}
           GRAVITY: ${prec(GRAVITY)}
           Frame: ${frame}
@@ -116,7 +148,7 @@ function startMarioGame() {
           DeltaV: X ${prec(oMario.xVelocity)} Y ${prec(oMario.yVelocity)} Yb ${prec(oMario.xVelocityBeforeJump)}
         `
         // ctx.fillText(debugMessage, 10, 50);
-        ctx.drawImage(images[2], 0, 0);
+
 
         fillTextMultiLine(ctx, debugMessage, 10, 50)
 
@@ -179,7 +211,7 @@ function startMarioGame() {
       });
 
       // Start the game loop
-      // requestAnimationFrame(gameLoop);
+      requestAnimationFrame(gameLoop);
     });
 
   };

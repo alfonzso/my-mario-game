@@ -106,7 +106,7 @@ function drawPixel(context, x, y, color) {
   context.fillRect(roundedX, roundedY, 5, 5);
 }
 
-onceLog = true
+// onceLog = true
 
 async function shapeFinder(ctx, canvas, images) {
   ctx.drawImage(images[2], 0, 0);
@@ -148,7 +148,7 @@ async function shapeFinder(ctx, canvas, images) {
       // await redPixel.genHash()
       // if (onceLog)
       //   console.log("kek   ", redPixel)
-      onceLog = false
+      // onceLog = false
       redShape.push(redPixel)
       // console.log("")
       // console.log("Pixel at " + x + "," + y + " is white");
@@ -163,7 +163,7 @@ async function shapeFinder(ctx, canvas, images) {
   let redShapeCorner = []
   // let redShapeCornerHashMap = []
 
-  leftRedShape = redShape.filter(v => v.x === 495)
+  // leftRedShape = redShape.filter(v => v.x === 495)
   console.log("---->", redShape[0], redShape.length);
   // console.log("---->---->", leftRedShape);
 
@@ -200,7 +200,7 @@ async function shapeFinder(ctx, canvas, images) {
     }
     if (notRedCounter >= 3) {
       redShapeCorner.push(shape)
-      drawPixel(context, shape.x, shape.y, "black")
+      // drawPixel(context, shape.x, shape.y, "black")
     }
   }
 
