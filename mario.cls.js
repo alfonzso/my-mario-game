@@ -45,7 +45,7 @@ class Mario {
   }
 
   isDoNothing() {
-    return this.action === []
+    return this.action.length === 0
   }
 
   isJumping() {

@@ -106,6 +106,14 @@ function startMarioGame() {
 
         oMario.move()
 
+        // if (frame % 4 === 0)
+        //   console.log(oMario.isDoNothing())
+
+        if (oMario.isDoNothing()) {
+          oMario.xVelocity = 0
+          // console.log("nope");
+        }
+
         if (oMario.yVelocity < 0 || oMario.yVelocity > 0) {
           if (oMario.xVelocityBeforeJump === 0) {
             oMario.xVelocityBeforeJump = oMario.xVelocity
@@ -136,6 +144,7 @@ function startMarioGame() {
         }
 
         // debugMessage = JSON.stringify({
+        marioActions = oMario.action.length > 0 ? oMario.action.join(', ') : "DoNothing"
         debugMessage = `
           redShapeXAvg: ${redShapeCorner.map(v => v.x).reduce((p, c) => p + c) / redShapeCorner.length}
           redShapeYAvg: ${redShapeCorner.map(v => v.y).reduce((p, c) => p + c) / redShapeCorner.length}
@@ -144,7 +153,8 @@ function startMarioGame() {
           Frame: ${frame}
           Mario X: ${prec(oMario.x)}
           Mario Y: ${prec(oMario.y)}
-          Action: ${oMario.action.join(', ')}
+          Action: ${marioActions}
+          xVelocityBeforeJump: ${oMario.xVelocityBeforeJump}
           DeltaV: X ${prec(oMario.xVelocity)} Y ${prec(oMario.yVelocity)} Yb ${prec(oMario.xVelocityBeforeJump)}
         `
         // ctx.fillText(debugMessage, 10, 50);
@@ -176,13 +186,17 @@ function startMarioGame() {
         oMario.debugCode = event.code
         if (event.code === "ArrowLeft") {
           // Left arrow key pressed
+          oMario.removeLeftOrRightAction(MarioActions.runningRight)
           oMario.addAction(MarioActions.runningLeft)
           oMario.xVelocity = -10;
+          oMario.xVelocityBeforeJump = 0
         }
         if (event.code === "ArrowRight") {
           // Right arrow key pressed
+          oMario.removeLeftOrRightAction(MarioActions.runningLeft)
           oMario.addAction(MarioActions.runningRight)
           oMario.xVelocity = 10;
+          oMario.xVelocityBeforeJump = 0
         }
         if (event.code === "Space") {
           // Space bar pressed
@@ -198,16 +212,20 @@ function startMarioGame() {
       });
 
       document.addEventListener("keyup", event => {
-        if (event.code === "ArrowLeft") {
-          // Left or right arrow key released
-          oMario.removeLeftOrRightAction(MarioActions.runningLeft)
-          oMario.xVelocity = 0;
+        if (event.code === "ArrowLeft" || event.code === "ArrowRight") {
+          oMario.removeLeftOrRightAction(event.code === "ArrowLeft" ? MarioActions.runningLeft : MarioActions.runningRight)
+          // oMario.xVelocity = 0;
         }
-        if (event.code === "ArrowRight") {
-          // Left or right arrow key released
-          oMario.removeLeftOrRightAction(MarioActions.runningRight)
-          oMario.xVelocity = 0;
-        }
+        // if (event.code === "ArrowLeft") {
+        //   // Left or right arrow key released
+        //   // oMario.removeLeftOrRightAction(MarioActions.runningLeft)
+        //   oMario.xVelocity = 0;
+        // }
+        // if (event.code === "ArrowRight") {
+        //   // Left or right arrow key released
+        //   // oMario.removeLeftOrRightAction(MarioActions.runningRight)
+        //   oMario.xVelocity = 0;
+        // }
       });
 
       // Start the game loop
