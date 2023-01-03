@@ -11,7 +11,7 @@ function startMarioGame() {
       "mario.bg.png"
     ]
 
-    loadImages(myImages).then(images => {
+    loadImages(myImages).then(async images => {
       const canvas = document.getElementById("gameCanvas");
       const ctx = canvas.getContext("2d");
       ctx.canvas.width = 1280;
@@ -30,23 +30,34 @@ function startMarioGame() {
       let lastFrameTime = 0; // Timestamp of the last frame
 
       // Main game loop
-      let redShapeCorner = shapeFinder(ctx, canvas, images)
+      // let [redShapeCorner, redShapeCornerHashMap] = await shapeFinder(ctx, canvas, images)
+      let redShapeCorner = await shapeFinder(ctx, canvas, images)
+
+      // console.log(arrayMin(redShapeCorner));
+      console.log(redShapeCorner);
+      console.log(redShapeCorner.length);
+      // console.log(redShapeCornerHashMap.length);
+      // console.log(redShapeCornerHashMap[1400]);
+
+      console.log(new MyPixels(5, 5));
+      console.log(new MyPixels(5, 5) === new MyPixels(5, 5));
+      console.log(objDeepEqual(new MyPixels(5, 5), new MyPixels(5, 5)));
+      // console.log(md5(JSON.stringify({ foo: 'bar' })));
+
+      // const textAsBuffer = new TextEncoder().encode(JSON.stringify({ foo: 'bar' }));
+      // const hashBuffer = await window.crypto.subtle.digest('SHA-256', textAsBuffer); const hashArray = Array.from(new Uint8Array(hashBuffer))
+      // const digest = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      // console.log(digest);
+
+      // md5(JSON.stringify({foo: 'bar'}))
+      // console.log(redShapeCorner[1500]);
+      // console.log(redShapeCorner[3000]);
+      // redShapeCorner.map(v => console.log(v.x))
+      redShapeCorner.filter(v => v.x === 500).map(v => console.log(v))
 
       function isOnShape(oMario, redShapeCorner) {
         for (const redShape of redShapeCorner) {
-          // console.log(oMario.y + oMario.height === redShape.y, oMario.y + oMario.height, redShape.y)
-          // if (oMario.x === redShape.x) {
-          // if (frame % 4 === 0 && oMario.y + oMario.height > redShape.y - 3 && oMario.y + oMario.height < redShape.y + 3)
-          //   console.log(oMario.x === redShape.x, oMario.x, redShape.x)
-          //     // console.log("kekekekek", Math.trunc(oMario.y - oMario.height) === redShape.y, Math.trunc(oMario.y - oMario.height), redShape.y)
-          //     console.log("kekekekek", Math.trunc(oMario.y) === redShape.y, Math.trunc(oMario.y), redShape.y)
-          //   // if (Math.trunc(oMario.y) === redShape.y)
-          //   //   console.log("lelele")
-          // }
-
-          // if (oMario.y + oMario.height === redShape.y && oMario.x === redShape.x) {
           if (oMario.y + oMario.height > redShape.y - 3 && oMario.y + oMario.height < redShape.y + 3 && Math.trunc(oMario.x + (oMario.width / 2)) === redShape.x) {
-            // console.log("m there")
             return redShape
           }
         }
@@ -168,7 +179,7 @@ function startMarioGame() {
       });
 
       // Start the game loop
-      requestAnimationFrame(gameLoop);
+      // requestAnimationFrame(gameLoop);
     });
 
   };

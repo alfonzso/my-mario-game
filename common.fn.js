@@ -1,4 +1,16 @@
 
+function arrayMin(arr) {
+  return arr.reduce(function (p, v) {
+    return (p.y < v.y ? p : v);
+  });
+}
+
+function arrayMax(arr) {
+  return arr.reduce(function (p, v) {
+    return (p > v ? p : v);
+  });
+}
+
 function choseSpriteImage(spriteSheet, frame, frameWidth) {
   result = 0
   const spirteX = oMario.xVelocity < 0 ? (spriteSheet.width - frameWidth) - (frame * frameWidth) : (frame * frameWidth)
@@ -52,12 +64,6 @@ const rgb2hsl = (r, g, b) => {
 };
 
 function isRed(h, s, l) {
-  // const h = hsl[0]
-  // const s = hsl[1]
-  // const l = hsl[2]
-
-  // console.log(hsl.map((x, i) => i ? (x * 100).toFixed(2) + '%' : x | 0).join(', '))
-
   if (h > 350)
     if (s >= 40)
       if (l < 70 && l > 30)
@@ -65,31 +71,25 @@ function isRed(h, s, l) {
   return false
 }
 
-class MyPixels {
-  x = 0;
-  y = 0;
-  neightb = []
-
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
-  }
-
-  neightbourCalculator() {
-    this.neightb.push([new MyPixels(this.x - 1, this.y - 1), new MyPixels(this.x, this.y - 1), new MyPixels(this.x + 1, this.y - 1),])
-    this.neightb.push([new MyPixels(this.x - 1, this.y), new MyPixels(this.x + 1, this.y),])
-    this.neightb.push([new MyPixels(this.x - 1, this.y + 1), new MyPixels(this.x, this.y + 1), new MyPixels(this.x + 1, this.y + 1),])
-  }
-
-}
-
 function xyToBigIndex(x, y, canvas) {
   return (x * 4) + (canvas.width * y * 4)
 }
 
 function getHSLFromBigIndex(bigIdx, data) {
-  // return [data[bigIdx], data[bigIdx + 1], data[bigIdx + 2]]
   return rgb2hsl(data[bigIdx], data[bigIdx + 1], data[bigIdx + 2])
+}
+
+function objDeepEqual(obj1, obj2) {
+  return JSON.stringify(obj1) === JSON.stringify(obj2)
+}
+
+function objIncludes(arr, itemMayIncludes) {
+  for (const item of arr) {
+    if (objDeepEqual(item, itemMayIncludes)) {
+      return true
+    }
+  }
+  return false
 }
 
 // function point(x, y, canvas) {
@@ -103,10 +103,12 @@ function drawPixel(context, x, y, color) {
   var roundedX = Math.round(x);
   var roundedY = Math.round(y);
   context.fillStyle = color || '#000';
-  context.fillRect(roundedX, roundedY, 1, 1);
+  context.fillRect(roundedX, roundedY, 5, 5);
 }
 
-function shapeFinder(ctx, canvas, images) {
+onceLog = true
+
+async function shapeFinder(ctx, canvas, images) {
   ctx.drawImage(images[2], 0, 0);
 
   context = canvas.getContext('2d');
@@ -132,6 +134,7 @@ function shapeFinder(ctx, canvas, images) {
   // console.log(isRed(...hsl), x, y)
 
   redShape = []
+
   for (let i = 0; i < data.length; i += 4) {
     const r = data[i];
     const g = data[i + 1];
@@ -141,7 +144,12 @@ function shapeFinder(ctx, canvas, images) {
     if (isRed(...rgb2hsl(r, g, b))) {
       let y = Math.trunc(i / 4 / canvas.width)
       let x = (i - (y * 4 * canvas.width)) / 4
-      redShape.push(new MyPixels(x, y))
+      redPixel = new MyPixels(x, y)
+      // await redPixel.genHash()
+      // if (onceLog)
+      //   console.log("kek   ", redPixel)
+      onceLog = false
+      redShape.push(redPixel)
       // console.log("")
       // console.log("Pixel at " + x + "," + y + " is white");
     }
@@ -153,12 +161,22 @@ function shapeFinder(ctx, canvas, images) {
     // console.log(r, g, b)
   }
   let redShapeCorner = []
+  // let redShapeCornerHashMap = []
+
+  leftRedShape = redShape.filter(v => v.x === 495)
+  console.log("---->", redShape[0], redShape.length);
+  // console.log("---->---->", leftRedShape);
+
+  // for (const shape of leftRedShape) {
+  //   drawPixel(context, shape.x, shape.y, "green")
+  // }
 
   for (const shape of redShape) {
     shape.neightbourCalculator()
     // console.log(redShape[0], redShape[0].neightb,);
 
     // for (const row of redShape[0].neightb) {
+    let notRedCounter = 0
     for (const row of shape.neightb) {
       for (const xy of row) {
         //     // console.log(xy);
@@ -166,15 +184,28 @@ function shapeFinder(ctx, canvas, images) {
         hsl = getHSLFromBigIndex(bigIdx, data)
         //     // console.log(hsl);
         if (!isRed(...hsl)) {
+          notRedCounter += 1
           //       console.log(xy)
           // drawPixel(context, xy.x, xy.y, "black")
-          redShapeCorner.push(xy)
+          // if (!objIncludes(redShapeCorner, xy))
+          // xyHash = await objHash(xy)
+
+          // if (redShapeCorner.filter(v => v.hash === xy.hash).length === 0) {
+          //   // if (!redShapeCornerHashMap.includes(xyHash)) {
+          //   // redShapeCornerHashMap.push(xyHash)
+          //   redShapeCorner.push(xy)
+          // }
         }
       }
+    }
+    if (notRedCounter >= 3) {
+      redShapeCorner.push(shape)
+      drawPixel(context, shape.x, shape.y, "black")
     }
   }
 
   // console.log(redShapeCorner)
+  // return [redShapeCorner, redShapeCornerHashMap]
   return redShapeCorner
 
 
@@ -189,4 +220,12 @@ function shapeFinder(ctx, canvas, images) {
   // }
   // console.log(pixel)
 
+}
+
+async function objHash(text) {
+  const textAsBuffer = new TextEncoder().encode(JSON.stringify(text));
+  const hashBuffer = await window.crypto.subtle.digest('SHA-256', textAsBuffer); const hashArray = Array.from(new Uint8Array(hashBuffer))
+  const digest = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  // console.log(digest);
+  return digest
 }
