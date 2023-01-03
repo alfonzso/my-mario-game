@@ -134,12 +134,12 @@ function startMarioGame() {
         if (event.code === "ArrowLeft") {
           // Left arrow key pressed
           oMario.addAction(MarioActions.runningLeft)
-          oMario.xVelocity = -5;
+          oMario.xVelocity = -10;
         }
         if (event.code === "ArrowRight") {
           // Right arrow key pressed
           oMario.addAction(MarioActions.runningRight)
-          oMario.xVelocity = 5;
+          oMario.xVelocity = 10;
         }
         if (event.code === "Space") {
           // Space bar pressed
