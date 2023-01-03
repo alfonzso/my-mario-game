@@ -17,7 +17,7 @@ function choseSpriteImage(spriteSheet, frame, frameWidth) {
   if (oMario.isRunningLeft() || oMario.isRunningRight() || oMario.isDoNothing()) {
     result = spirteX
   }
-  if (oMario.isJumping()) {
+  if (oMario.isJumping() || oMario.isGoingDown()) {
     result = oMario.xVelocity < 0 ? 635 : 465
   }
   // console.log(result)

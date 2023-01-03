@@ -111,6 +111,7 @@ function startMarioGame() {
 
         if (oMario.isDoNothing()) {
           oMario.xVelocity = 0
+
           // console.log("nope");
         }
 
@@ -128,7 +129,8 @@ function startMarioGame() {
         redShapeMin.map(shape => drawPixel(context, shape.x, shape.y, "black"))
 
         oMario.yVelocity += GRAVITY;
-        let onShape = isOnShape(oMario, redShapeCorner)
+        // let onShape = isOnShape(oMario, redShapeCorner)
+        let onShape = isOnShape(oMario, redShapeMin)
         if (oMario.y + oMario.height >= canvas.height || onShape !== false) {
           // if (oMario.y + oMario.height >= canvas.height) {
 
@@ -186,14 +188,14 @@ function startMarioGame() {
         oMario.debugCode = event.code
         if (event.code === "ArrowLeft") {
           // Left arrow key pressed
-          oMario.removeLeftOrRightAction(MarioActions.runningRight)
+          // oMario.removeLeftOrRightAction(MarioActions.runningRight)
           oMario.addAction(MarioActions.runningLeft)
           oMario.xVelocity = -10;
           oMario.xVelocityBeforeJump = 0
         }
         if (event.code === "ArrowRight") {
           // Right arrow key pressed
-          oMario.removeLeftOrRightAction(MarioActions.runningLeft)
+          // oMario.removeLeftOrRightAction(MarioActions.runningLeft)
           oMario.addAction(MarioActions.runningRight)
           oMario.xVelocity = 10;
           oMario.xVelocityBeforeJump = 0

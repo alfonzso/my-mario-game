@@ -3,9 +3,12 @@ const MarioActions = {
   jumping: "jumping",
   runningLeft: "runLeft",
   runningRight: "runRight",
+  goingUp: "goUp",
+  goingDown: "goDown",
 }
 
 class Mario {
+  yB = 0;
   x = 0;
   y = 0;
   width = 32 * 2;
@@ -32,6 +35,11 @@ class Mario {
     this.action = this.action.filter(item => item != MarioActions.jumping)
   }
 
+  removeGoingUpOrDown() {
+    this.action = this.action.filter(item => item != MarioActions.goingDown)
+    this.action = this.action.filter(item => item != MarioActions.goingUp)
+  }
+
   removeLeftOrRightAction(doing) {
     this.action = this.action.filter(item => item != doing)
   }
@@ -52,15 +60,29 @@ class Mario {
     return this.action.includes(MarioActions.jumping)
   }
 
+  isGoingUp() {
+    return this.action.includes(MarioActions.goingUp)
+  }
+
+  isGoingDown() {
+    return this.action.includes(MarioActions.goingDown)
+  }
+
   // Method to move Mario based on his velocity
   move() {
     if (this.xVelocity !== 0 || this.yVelocity !== 0) {
+      this.yB = this.y
       this.x += this.xVelocity;
-      // console.log(this.yVelocity);
       this.y += this.yVelocity;
-      // for (let index = 0; index < Math.abs(this.yVelocity); index++) {
-      //   this.y += 1;
-      // }
+      if (this.yB > this.y) {
+        this.addAction(MarioActions.goingUp)
+      } else if (this.yB < this.y) {
+        this.addAction(MarioActions.goingDown)
+      } else {
+        oMario.removeGoingUpOrDown()
+      }
+    } else {
+      oMario.removeGoingUpOrDown()
     }
   }
 
