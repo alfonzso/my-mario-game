@@ -63,17 +63,18 @@ function startMarioGame() {
       }
 
       function isOnShape(oMario, redShapeCorner) {
-
         for (const redShape of redShapeCorner) {
-          // fillTextMultiLine(ctx, `
-          //   oMario.y: ${oMario.y + oMario.height}
-          //   rSy: ${redShape.y}
-          // `, 1000, 50)
-          // if (frame % 4 === 0 && Math.trunc(oMario.x + (oMario.width / 2)) === redShape.x)
-          //   console.log(oMario.y + oMario.height, redShape.y);
           if (isYAxisNearShape(oMario, redShape, 3) && isXAxisNearShape(oMario, redShape)) {
-            // console.log("kekkkkkk");
             return redShape
+          }
+        }
+        return false
+      }
+      function isUnderShape(oMario, redShapeCorner) {
+        for (const redShape of redShapeCorner) {
+          if (isYAxisNearShape(oMario, redShape, 50) && isXAxisNearShape(oMario, redShape)) {
+            oMario.yVelocity = Math.abs(oMario.yVelocity)
+            return false
           }
         }
         return false
@@ -87,8 +88,9 @@ function startMarioGame() {
       redShapeXAvg = redShapeCorner.map(v => v.x).reduce((p, c) => p + c) / redShapeCorner.length
       redShapeYAvg = redShapeCorner.map(v => v.y).reduce((p, c) => p + c) / redShapeCorner.length
 
-      redShapeMin = redShapeCorner.filter(v => v.y < redShapeYAvg)
-      console.log(redShapeMin);
+      redShapeTop = redShapeCorner.filter(v => v.y < redShapeYAvg)
+      redShapeBottom = redShapeCorner.filter(v => v.y > redShapeYAvg)
+      console.log(redShapeTop);
 
       function gameLoop(timestamp) {
         // Calculate the elapsed time since the last frame
@@ -126,14 +128,13 @@ function startMarioGame() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(images[2], 0, 0);
 
-        redShapeMin.map(shape => drawPixel(context, shape.x, shape.y, "black"))
+        // redShapeBottom.map(shape => drawPixel(context, shape.x, shape.y, "black"))
 
         oMario.yVelocity += GRAVITY;
-        // let onShape = isOnShape(oMario, redShapeCorner)
-        let onShape = isOnShape(oMario, redShapeMin)
-        if (oMario.y + oMario.height >= canvas.height || onShape !== false) {
-          // if (oMario.y + oMario.height >= canvas.height) {
 
+        let onShape = isOnShape(oMario, redShapeTop)
+        let underShape = isUnderShape(oMario, redShapeBottom)
+        if (oMario.y + oMario.height >= canvas.height || onShape !== false || underShape !== false) {
           if (oMario.isJumping()) {
             oMario.xVelocityBeforeJump = 0
             if (!(oMario.isRunningLeft() || oMario.isRunningRight())) {
