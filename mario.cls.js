@@ -1,69 +1,73 @@
 const MarioActions = {
-    nothing: "nothing",
-    jumping: "jumping",
-    runningLeft: "runLeft",
-    runningRight: "runRight",
+  nothing: "nothing",
+  jumping: "jumping",
+  runningLeft: "runLeft",
+  runningRight: "runRight",
 }
 
 class Mario {
-    x = 0;
-    y = 0;
-    width = 32 * 2;
-    height = 32 * 2;
-    xVelocity = 0;
-    yVelocity = 0;
-    action = []
-    // oldAction = []
-    debugCode = ""
-    xVelocityBeforeJump = 0
+  x = 0;
+  y = 0;
+  width = 32 * 2;
+  height = 32 * 2;
+  xVelocity = 0;
+  yVelocity = 0;
+  action = []
+  // oldAction = []
+  debugCode = ""
+  xVelocityBeforeJump = 0
 
-    // Constructor to set up the initial state of Mario
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-    }
+  // Constructor to set up the initial state of Mario
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
 
-    addAction(doing) {
-        if (!this.action.includes(doing))
-            this.action.push(doing)
-    }
+  addAction(doing) {
+    if (!this.action.includes(doing))
+      this.action.push(doing)
+  }
 
-    removeJumpAction() {
-        this.action = this.action.filter(item => item != MarioActions.jumping)
-    }
+  removeJumpAction() {
+    this.action = this.action.filter(item => item != MarioActions.jumping)
+  }
 
-    removeLeftOrRightAction(doing) {
-        this.action = this.action.filter(item => item != doing)
-    }
+  removeLeftOrRightAction(doing) {
+    this.action = this.action.filter(item => item != doing)
+  }
 
-    isRunningLeft() {
-        return this.action.includes(MarioActions.runningLeft)
-    }
+  isRunningLeft() {
+    return this.action.includes(MarioActions.runningLeft)
+  }
 
-    isRunningRight() {
-        return this.action.includes(MarioActions.runningRight)
-    }
+  isRunningRight() {
+    return this.action.includes(MarioActions.runningRight)
+  }
 
-    isDoNothing() {
-        return this.action === []
-    }
+  isDoNothing() {
+    return this.action === []
+  }
 
-    isJumping() {
-        return this.action.includes(MarioActions.jumping)
-    }
+  isJumping() {
+    return this.action.includes(MarioActions.jumping)
+  }
 
-    // Method to move Mario based on his velocity
-    move() {
-        if (this.xVelocity !== 0 || this.yVelocity !== 0) {
-            this.x += this.xVelocity;
-            this.y += this.yVelocity;
-        }
+  // Method to move Mario based on his velocity
+  move() {
+    if (this.xVelocity !== 0 || this.yVelocity !== 0) {
+      this.x += this.xVelocity;
+      // console.log(this.yVelocity);
+      this.y += this.yVelocity;
+      // for (let index = 0; index < Math.abs(this.yVelocity); index++) {
+      //   this.y += 1;
+      // }
     }
+  }
 
-    // Method to handle Mario's jumping behavior
-    jump() {
-        if (this.yVelocity === 0) {
-            this.yVelocity = -10;
-        }
+  // Method to handle Mario's jumping behavior
+  jump() {
+    if (this.yVelocity === 0) {
+      this.yVelocity = -30;
     }
+  }
 }
