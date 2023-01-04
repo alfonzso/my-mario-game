@@ -281,15 +281,12 @@ export class MyShapes {
   }
 
   startCornerFinder(shapeEdges, ctx) {
-    for (let index = 0; index < shapeEdges.length; index += 2) {
-      this.cornerFinder(shapeEdges[index].x, shapeEdges[index].y, shapeEdges, ctx)
-
-    }
-    // for (const edges of shapeEdges) {
-    //   this.cornerFinder(edges.x, edges.y, shapeEdges, ctx)
+    // for (let index = 0; index < shapeEdges.length; index += 2) {
+    //   this.cornerFinder(shapeEdges[index].x, shapeEdges[index].y, shapeEdges, ctx)
     // }
-    // let xx = shapeEdges[0].x
-    // let yy = shapeEdges[0].y
+    for (const edges of shapeEdges) {
+      this.cornerFinder(edges.x, edges.y, shapeEdges, ctx)
+    }
   }
 
   cornerFinder(xx, yy, shapeEdges, ctx) {
@@ -320,13 +317,15 @@ export class MyShapes {
     // }
 
     let edgesFromCircle = this.calcEdgesFromCircle(shapeEdges, xx, yy)
+    if (edgesFromCircle.length === 0)
+      return
 
     // console.log(xx, yy, edgesFromCircle);
-    let minX = edgesFromCircle.reduce((p, v) => p.x < v.x ? p : v)
-    let maxX = edgesFromCircle.reduce((p, v) => p.x > v.x ? p : v)
+    let minX = edgesFromCircle.reduce((p, v) => p.x < v.x ? p : v) //, 0)
+    let maxX = edgesFromCircle.reduce((p, v) => p.x > v.x ? p : v) //, 0)
 
-    let minY = edgesFromCircle.reduce((p, v) => p.y < v.y ? p : v)
-    let maxY = edgesFromCircle.reduce((p, v) => p.y > v.y ? p : v)
+    let minY = edgesFromCircle.reduce((p, v) => p.y < v.y ? p : v) //, 0)
+    let maxY = edgesFromCircle.reduce((p, v) => p.y > v.y ? p : v) //, 0)
 
     // let isPOL = isPointOnLine(xx, yy, min.x, min.y, max.x, max.y, 5)
     // if (!isPOL)
@@ -368,20 +367,31 @@ export class MyShapes {
     let edgesFromCircle = []
 
     for (let i = 0; i < this.n; i++, this.setupEFC.a += this.da) {
-      let x = xx + this.setupEFC.r * Math.cos(this.setupEFC.a);
-      let y = yy + this.setupEFC.r * Math.sin(this.setupEFC.a);
-      // here x,y is your point
-      // console.log(x, y);
+      let x = Math.trunc(xx + this.setupEFC.r * Math.cos(this.setupEFC.a))
+      // let x = xx + this.setupEFC.r * Math.cos(this.setupEFC.a)
+      // let _x = x - this.setupEFC.tolerance
+      // let __x = x + this.setupEFC.tolerance
+      // let xARR = [x, _x, __x]
+      let y = Math.trunc(yy + this.setupEFC.r * Math.sin(this.setupEFC.a))
+      // let y = yy + this.setupEFC.r * Math.sin(this.setupEFC.a)
+      // let matchedEdges = shapeEdges.filter(v =>
+      //   // v.x <= x + this.setupEFC.tolerance && v.x >= x - this.setupEFC.tolerance
+      //   // xARR.includes(v.x)
+      //   v.x === x
+      //   &&
+      //   v.y === y
+      // )
+      // edgesFromCircle.push(
+      //   ...matchedEdges
+      // )
       edgesFromCircle.push(
         ...shapeEdges.filter(
-          v => (
-            v.x <= Math.trunc(x) + this.setupEFC.tolerance && v.x >= Math.trunc(x) - this.setupEFC.tolerance)
+          v =>
+            (v.x <= x + this.setupEFC.tolerance && v.x >= x - this.setupEFC.tolerance)
             &&
-            (v.y <= Math.trunc(y) + this.setupEFC.tolerance && v.y >= Math.trunc(y) - this.setupEFC.tolerance)
+            (v.y <= y + this.setupEFC.tolerance && v.y >= y - this.setupEFC.tolerance)
         )
       )
-      // edgesFromCircle.push(...myShapes.shapeEdges.filter(v => v.y === y))
-      // drawPixel(ctx, x, y, "black", 1)
     }
     return edgesFromCircle
   }
