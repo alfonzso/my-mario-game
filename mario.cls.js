@@ -79,10 +79,10 @@ class Mario {
       } else if (this.yB < this.y) {
         this.addAction(MarioActions.goingDown)
       } else {
-        oMario.removeGoingUpOrDown()
+        this.removeGoingUpOrDown()
       }
     } else {
-      oMario.removeGoingUpOrDown()
+      this.removeGoingUpOrDown()
     }
   }
 
@@ -92,4 +92,9 @@ class Mario {
       this.yVelocity = -30;
     }
   }
+}
+
+export{
+  Mario,
+  MarioActions
 }

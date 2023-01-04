@@ -1,4 +1,4 @@
-class MyPixels {
+export class MyPixels {
   // hash = ""
   x = 0;
   y = 0;

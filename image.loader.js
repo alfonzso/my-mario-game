@@ -26,3 +26,7 @@ async function loadImages(imageUrlArray) {
     console.log("all images loaded");
     return imageArray;
 }
+
+export {
+  loadImages
+}
