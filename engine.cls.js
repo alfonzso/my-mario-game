@@ -42,7 +42,7 @@ export class MyEngine {
     // Update the animation frame if the interval has passed
     if (this.oMario.xVelocity !== 0 && elapsedTime > this.frameInterval) {
       // Increment the frame
-      this.frame = (frame + 1) % this.numFrames;
+      this.frame = (this.frame + 1) % this.numFrames;
       // Reset the last frame time
       this.lastFrameTime = timestamp;
     } else if (this.oMario.xVelocity === 0 && elapsedTime > this.frameInterval) {
@@ -92,11 +92,11 @@ export class MyEngine {
     // debugMessage = JSON.stringify({
     let marioActions = this.oMario.action.length > 0 ? this.oMario.action.join(', ') : "DoNothing"
     let debugMessage = `
-      redShapeXAvg: ${redShapeCorner.map(v => v.x).reduce((p, c) => p + c) / redShapeCorner.length}
-      redShapeYAvg: ${redShapeCorner.map(v => v.y).reduce((p, c) => p + c) / redShapeCorner.length}
+      redShapeXAvg: ${this.shapes.getShapeXAvg()}
+      redShapeYAvg: ${this.shapes.getShapeYAvg()}
       code: ${this.oMario.debugCode}
       GRAVITY: ${prec(GRAVITY)}
-      Frame: ${frame}
+      Frame: ${this.frame}
       Mario X: ${prec(this.oMario.x)}
       Mario Y: ${prec(this.oMario.y)}
       Action: ${marioActions}
@@ -106,25 +106,28 @@ export class MyEngine {
     // this.ctx.fillText(debugMessage, 10, 50);
 
 
-    fillTextMultiLine(ctx, debugMessage, 10, 50)
+    fillTextMultiLine(this.ctx, debugMessage, 10, 50)
 
     let spriteSheet = this.oMario.xVelocity < 0 ? this.images[1] : this.images[0]
 
     this.ctx.drawImage(
       spriteSheet,
-      choseSpriteImage(spriteSheet, frame, frameWidth, oMario), // x position of the frame on the sprite sheet
+      choseSpriteImage(spriteSheet, this.frame, this.frameWidth, this.oMario), // x position of the frame on the sprite sheet
       165, // y position of the frame on the sprite sheet
-      frameWidth, // width of the frame
-      frameHeight, // height of the frame
+      this.frameWidth, // width of the frame
+      this.frameHeight, // height of the frame
       this.oMario.x, // x position on the canvas to draw the frame
       this.oMario.y, // y position on the canvas to draw the frame
       this.oMario.width, // width to draw the frame on the canvas
       this.oMario.height // height to draw the frame on the canvas
     );
 
+    // function gameLoopWrapper(timestamp) {
+    //   this.gameLoop(timestamp)
+    // }
 
     // Request the next frame of the game loop
-    requestAnimationFrame(this.gameLoop);
+    // requestAnimationFrame(gameLoopWrapper);
   }
 
 }

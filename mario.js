@@ -25,11 +25,11 @@ export function startMarioGame(oMario) {
       // Main game loop
       // let [redShapeCorner, redShapeCornerHashMap] = await shapeFinder(ctx, canvas, images)
       let myShapes = new MyShapes()
-      let redShapeCorner = await myShapes.shapeFinder(ctx, canvas, images)
+      await myShapes.shapeFinder(ctx, canvas, images)
 
       // console.log(arrayMin(redShapeCorner));
-      console.log(redShapeCorner);
-      console.log(redShapeCorner.length);
+      console.log(myShapes.shapeCorner);
+      console.log(myShapes.shapeCorner.length);
       // console.log(redShapeCornerHashMap.length);
       // console.log(redShapeCornerHashMap[1400]);
 
@@ -55,15 +55,7 @@ export function startMarioGame(oMario) {
       // console.log(redShapeCorner.reduce((p, c) => (p.x | 0 )+ c.x));
       // console.log(redShapeCorner.reduce((p, c) => p.x + c.x));
 
-      // let redShapeXAvg = redShapeCorner.map(v => v.x).reduce((p, c) => p + c) / redShapeCorner.length
-      let redShapeYAvg = redShapeCorner.map(v => v.y).reduce((p, c) => p + c) / redShapeCorner.length
-
-      myShapes.setTop(
-        redShapeCorner.filter(v => v.y < redShapeYAvg)
-      )
-      myShapes.setBottom(
-        redShapeCorner.filter(v => v.y > redShapeYAvg)
-      )
+      myShapes.calculateTopBottom()
       // console.log(redShapeTop);
 
       let myEngine = new MyEngine(oMario, ctx, canvas, images)
@@ -71,6 +63,8 @@ export function startMarioGame(oMario) {
 
       function gameLoopWrapper(timestamp) {
         myEngine.gameLoop(timestamp)
+        requestAnimationFrame(gameLoopWrapper);
+
       }
       // Start the game loop
       requestAnimationFrame(gameLoopWrapper);

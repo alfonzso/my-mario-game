@@ -44,8 +44,20 @@ export class MyShapes {
       }
     }
 
-    return redShapeCorner
+    // return redShapeCorner
+    this.shapeCorner = redShapeCorner
   }
+
+  getShapeXAvg() {
+    // this.setShapeXAvg = shapeCorner.map(v => v.x).reduce((p, c) => p + c) / shapeCorner.length
+    return this.shapeCorner.map(v => v.x).reduce((p, c) => p + c) / this.shapeCorner.length
+  }
+
+  getShapeYAvg() {
+    // this.setShapeYAvg = shapeCorner.map(v => v.y).reduce((p, c) => p + c) / shapeCorner.length
+    return this.shapeCorner.map(v => v.y).reduce((p, c) => p + c) / this.shapeCorner.length
+  }
+
 
   isYAxisNearShape(oMario, redShape, interval) {
     return oMario.y + oMario.height >= redShape.y - interval && oMario.y + oMario.height <= redShape.y + interval
@@ -78,12 +90,16 @@ export class MyShapes {
     return [this.isOnShape(oMario), this.isUnderShape(oMario)]
   }
 
-  setTop(shapeTop) {
-    this.shapeTop = shapeTop
-  }
 
-  setBottom(shapeBottom) {
-    this.shapeBottom = shapeBottom
+  calculateTopBottom() {
+    let redShapeXAvg = this.shapeCorner.map(v => v.x).reduce((p, c) => p + c) / this.shapeCorner.length
+    let redShapeYAvg = this.shapeCorner.map(v => v.y).reduce((p, c) => p + c) / this.shapeCorner.length
+
+    this.shapeTop = this.shapeCorner.filter(v => v.y < redShapeYAvg)
+    this.shapeBottom = this.shapeCorner.filter(v => v.y > redShapeYAvg)
+
+    this.shapeLeft = this.shapeCorner.filter(v => v.x < redShapeXAvg)
+    this.shapeRight = this.shapeCorner.filter(v => v.y > redShapeXAvg)
   }
 
 
