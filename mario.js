@@ -1,15 +1,17 @@
 import { MyEngine } from "./engine.cls.js";
 import { loadImages } from "./image.loader.js";
 import { MyShapes } from "./shape.cls.js";
+import { drawPixel, isPointOnLine } from "./common.fn.js";
 
 export function startMarioGame(oMario) {
   window.onload = async () => {
 
     let myImages = [
-      "mario_sprite_sheet.png",
-      "mario_sprite_sheet_flipped.png",
-      "mario.bg.png"
+      "./backgrounds/mario_sprite_sheet.png",
+      "./backgrounds/mario_sprite_sheet_flipped.png",
+      "./backgrounds/mario.bg.moreshape.png"
     ]
+    // "./backgrounds/mario.bg.png"
 
     loadImages(myImages).then(async images => {
       const canvas = document.getElementById("gameCanvas");
@@ -41,7 +43,42 @@ export function startMarioGame(oMario) {
       // let data = context.getImageData(0, 0, canvas.width, canvas.height).data;
       // myShapes.shapeEdges.map(v => v.nbc(10, canvas, ctx, data, myShapes.shapeEdges))
       // myShapes.shapeEdges.map(v => v.nbc(10, ctx, myShapes.shapeEdges))
-      myShapes.startNbc(10, ctx, myShapes.shapeEdges)
+      // let xx = myShapes.shapeEdges[0].x
+      // let yy = myShapes.shapeEdges[0].y
+
+      // let edgesFromCircle = []
+      // let tolerance = 1
+      // let r = 5
+      // let d = 1
+      // let n = Math.ceil(2.0 * Math.PI * r / d); // integer number of points (rounded up)
+      // let da = 2.0 * Math.PI / n;           // floating angular step between points
+      // let a = 0.0
+      // for (let i = 0; i < n; i++, a += da) {
+      //   let x = xx + r * Math.cos(a);
+      //   let y = yy + r * Math.sin(a);
+      //   // here x,y is your point
+      //   // console.log(x, y);
+      //   edgesFromCircle.push(
+      //     ...myShapes.shapeEdges.filter(
+      //       v => (v.x <= Math.trunc(x) + tolerance && v.x >= Math.trunc(x) - tolerance) && (v.y <= Math.trunc(y) + tolerance && v.y >= Math.trunc(y) - tolerance)
+      //     )
+      //   )
+      //   // edgesFromCircle.push(...myShapes.shapeEdges.filter(v => v.y === y))
+      //   drawPixel(ctx, x, y, "black", 1)
+      // }
+      // console.log(xx, yy, edgesFromCircle);
+      // let min = edgesFromCircle.reduce((p, v) => p.x < v.x ? p : v)
+      // let max = edgesFromCircle.reduce((p, v) => p.x > v.x ? p : v)
+
+      // let isPOL = isPointOnLine(xx, yy, min.x, min.y, max.x, max.y, 1)
+
+      // console.log(min, max, isPOL);
+      // for (const edc of [min, max]) {
+      //   drawPixel(ctx, edc.x, edc.y, "green", 2)
+      // }
+
+      // myShapes.startNbc(6, ctx, myShapes.shapeEdges)
+      myShapes.startCornerFinder(myShapes.shapeEdges, ctx)
 
       let myEngine = new MyEngine(oMario, ctx, canvas, images)
       myEngine.setShape(myShapes)

@@ -1,13 +1,13 @@
 
 function arrayMin(arr) {
   return arr.reduce(function (p, v) {
-    return (p.x < v.x ? p : v);
+    return (p.x < v.x || p.y < v.y ? p : v);
   });
 }
 
 function arrayMax(arr) {
   return arr.reduce(function (p, v) {
-    return (p.x > v.x ? p : v);
+    return (p.x > v.x || p.y > v.y ? p : v);
   });
 }
 

@@ -119,13 +119,16 @@ export class MyShapes {
       }
     }
 
-    let actualCorners = this.removeClosestPixelAndChooseAvgPoint(wannabeCorners)
+    // let actualCorners = this.removeClosestPixelAndChooseAvgPoint(wannabeCorners)
 
-    for (const pxl of actualCorners) {
-      drawPixel(ctx, pxl.x, pxl.y, "black", 4)
+    // for (const pxl of actualCorners) {
+    for (const pxl of wannabeCorners) {
+      if (pxl !== undefined)
+        drawPixel(ctx, pxl.x, pxl.y, "black", 4)
     }
 
-    console.log(actualCorners);
+    // console.log(actualCorners);
+    console.log(wannabeCorners);
   }
 
 
@@ -230,37 +233,94 @@ export class MyShapes {
 
     // console.log(cornersOfShape);
     // console.log(ttt);
-    let min = arrayMin(ttt);
-    let max = arrayMax(ttt);
+    // let min = arrayMin(ttt);
+    // let max = arrayMax(ttt);
     // console.log("kek");
 
     // for (const idx of ttt) {
 
     // }
+    for (let idx = 0; idx < ttt.length; idx++) {
+      let [x1, y1] = [ttt[idx].x, ttt[idx].y]
+      let [x2, y2] = [ttt[ttt.length - 1 - idx].x, ttt[ttt.length - 1 - idx].y]
+      // }
+      // let [x1, y1] = [min.x, min.y]
+      // let [x2, y2] = [max.x, max.y]
 
+      // console.log(isPointOnLine(this.x, this.y, x1, y1, x2, y2, 1));
 
-    let [x1, y1] = [min.x, min.y]
-    let [x2, y2] = [max.x, max.y]
+      // context.lineWidth = 5;
+      // context.moveTo(x1, y1);
+      // context.lineTo(x2, y2);
+      // context.stroke();
 
-    // console.log(isPointOnLine(this.x, this.y, x1, y1, x2, y2, 1));
-
-    // context.lineWidth = 5;
-    // context.moveTo(x1, y1);
-    // context.lineTo(x2, y2);
-    // context.stroke();
-
-    if (!isPointOnLine(pixel.x, pixel.y, x1, y1, x2, y2, 2)) {
-      // console.log(this.x, this.y);
-      //
-      return pixel
+      if (isPointOnLine(pixel.x, pixel.y, x1, y1, x2, y2, 1)) {
+        // console.log(pixel.x, pixel.y);
+        //
+        return null
+      }
     }
+    return pixel
 
-
-    return null
     // console.log(dbgArrStr.join("\n"));
     // return dbgArrStr.join("\n")
 
 
+  }
+
+  startCornerFinder(shapeEdges, ctx) {
+    for (const edges of shapeEdges) {
+      this.cornerFinder(edges.x, edges.y, shapeEdges, ctx)
+    }
+    // let xx = shapeEdges[0].x
+    // let yy = shapeEdges[0].y
+  }
+
+  cornerFinder(xx, yy, shapeEdges, ctx) {
+    // let xx = shapeEdges[0].x
+    // let yy = shapeEdges[0].y
+
+    let edgesFromCircle = []
+    let tolerance = 1
+    let r = 5
+    let d = 1
+    let n = Math.ceil(2.0 * Math.PI * r / d); // integer number of points (rounded up)
+    let da = 2.0 * Math.PI / n;           // floating angular step between points
+    let a = 0.0
+    for (let i = 0; i < n; i++, a += da) {
+      let x = xx + r * Math.cos(a);
+      let y = yy + r * Math.sin(a);
+      // here x,y is your point
+      // console.log(x, y);
+      edgesFromCircle.push(
+        ...shapeEdges.filter(
+          v => (v.x <= Math.trunc(x) + tolerance && v.x >= Math.trunc(x) - tolerance) && (v.y <= Math.trunc(y) + tolerance && v.y >= Math.trunc(y) - tolerance)
+        )
+      )
+      // edgesFromCircle.push(...myShapes.shapeEdges.filter(v => v.y === y))
+      // drawPixel(ctx, x, y, "black", 1)
+    }
+    // console.log(xx, yy, edgesFromCircle);
+    let min = edgesFromCircle.reduce((p, v) => p.x < v.x ? p : v)
+    let max = edgesFromCircle.reduce((p, v) => p.x > v.x ? p : v)
+
+    // let isPOL = isPointOnLine(xx, yy, min.x, min.y, max.x, max.y, 5)
+    // if (!isPOL)
+    //   drawPixel(ctx, xx, yy, "green", 5)
+
+
+    const path = new Path2D();
+    path.moveTo(min.x, min.y);
+    path.lineTo(max.x, max.y);
+    ctx.lineWidth = 8;
+    if (!ctx.isPointInStroke(path, xx, yy))
+      drawPixel(ctx, xx, yy, "green", 5)
+
+
+    // console.log(min, max, isPOL);
+    // for (const edc of [min, max]) {
+    //   drawPixel(ctx, edc.x, edc.y, "green", 2)
+    // }
   }
 
 }
