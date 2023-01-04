@@ -78,7 +78,11 @@ export function startMarioGame(oMario) {
       // }
 
       // myShapes.startNbc(6, ctx, myShapes.shapeEdges)
+      var startTime = performance.now()
       myShapes.startCornerFinder(myShapes.shapeEdges, ctx)
+      var endTime = performance.now()
+
+      console.log(`Call to doSomething took ${endTime - startTime} milliseconds`)
 
       let myEngine = new MyEngine(oMario, ctx, canvas, images)
       myEngine.setShape(myShapes)

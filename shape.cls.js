@@ -4,6 +4,18 @@ import { MyPixels } from "./mypixel.cls.js";
 
 export class MyShapes {
 
+  setupEFC = {
+    tolerance: 1,
+    r: 5,
+    d: 1,
+    a: 0.0,
+  }
+
+  // calcSetupEFC = {
+  n = Math.ceil(2.0 * Math.PI * this.setupEFC.r / this.setupEFC.d)
+  da = 2.0 * Math.PI / this.n
+  // }
+
   shapeEdges = null
   shapeCorners = null
 
@@ -269,58 +281,109 @@ export class MyShapes {
   }
 
   startCornerFinder(shapeEdges, ctx) {
-    for (const edges of shapeEdges) {
-      this.cornerFinder(edges.x, edges.y, shapeEdges, ctx)
+    for (let index = 0; index < shapeEdges.length; index += 2) {
+      this.cornerFinder(shapeEdges[index].x, shapeEdges[index].y, shapeEdges, ctx)
+
     }
+    // for (const edges of shapeEdges) {
+    //   this.cornerFinder(edges.x, edges.y, shapeEdges, ctx)
+    // }
     // let xx = shapeEdges[0].x
     // let yy = shapeEdges[0].y
   }
 
   cornerFinder(xx, yy, shapeEdges, ctx) {
+    // var startTime = performance.now()
+
     // let xx = shapeEdges[0].x
     // let yy = shapeEdges[0].y
 
-    let edgesFromCircle = []
-    let tolerance = 1
-    let r = 5
-    let d = 1
-    let n = Math.ceil(2.0 * Math.PI * r / d); // integer number of points (rounded up)
-    let da = 2.0 * Math.PI / n;           // floating angular step between points
-    let a = 0.0
-    for (let i = 0; i < n; i++, a += da) {
-      let x = xx + r * Math.cos(a);
-      let y = yy + r * Math.sin(a);
-      // here x,y is your point
-      // console.log(x, y);
-      edgesFromCircle.push(
-        ...shapeEdges.filter(
-          v => (v.x <= Math.trunc(x) + tolerance && v.x >= Math.trunc(x) - tolerance) && (v.y <= Math.trunc(y) + tolerance && v.y >= Math.trunc(y) - tolerance)
-        )
-      )
-      // edgesFromCircle.push(...myShapes.shapeEdges.filter(v => v.y === y))
-      // drawPixel(ctx, x, y, "black", 1)
-    }
+    // let edgesFromCircle = []
+    // let tolerance = 1
+    // let r = 5
+    // let d = 1
+    // let n = Math.ceil(2.0 * Math.PI * r / d); // integer number of points (rounded up)
+    // let da = 2.0 * Math.PI / n;           // floating angular step between points
+    // let a = 0.0
+    // for (let i = 0; i < n; i++, a += da) {
+    //   let x = xx + r * Math.cos(a);
+    //   let y = yy + r * Math.sin(a);
+    //   // here x,y is your point
+    //   // console.log(x, y);
+    //   edgesFromCircle.push(
+    //     ...shapeEdges.filter(
+    //       v => (v.x <= Math.trunc(x) + tolerance && v.x >= Math.trunc(x) - tolerance) && (v.y <= Math.trunc(y) + tolerance && v.y >= Math.trunc(y) - tolerance)
+    //     )
+    //   )
+    //   // edgesFromCircle.push(...myShapes.shapeEdges.filter(v => v.y === y))
+    //   // drawPixel(ctx, x, y, "black", 1)
+    // }
+
+    let edgesFromCircle = this.calcEdgesFromCircle(shapeEdges, xx, yy)
+
     // console.log(xx, yy, edgesFromCircle);
-    let min = edgesFromCircle.reduce((p, v) => p.x < v.x ? p : v)
-    let max = edgesFromCircle.reduce((p, v) => p.x > v.x ? p : v)
+    let minX = edgesFromCircle.reduce((p, v) => p.x < v.x ? p : v)
+    let maxX = edgesFromCircle.reduce((p, v) => p.x > v.x ? p : v)
+
+    let minY = edgesFromCircle.reduce((p, v) => p.y < v.y ? p : v)
+    let maxY = edgesFromCircle.reduce((p, v) => p.y > v.y ? p : v)
 
     // let isPOL = isPointOnLine(xx, yy, min.x, min.y, max.x, max.y, 5)
     // if (!isPOL)
     //   drawPixel(ctx, xx, yy, "green", 5)
 
+    let isPOLCounter = 0
+    for (let [miX, maY] of [[minX, maxX], [minY, maxY]]) {
 
-    const path = new Path2D();
-    path.moveTo(min.x, min.y);
-    path.lineTo(max.x, max.y);
-    ctx.lineWidth = 8;
-    if (!ctx.isPointInStroke(path, xx, yy))
+      const path = new Path2D();
+      path.moveTo(miX.x, miX.y);
+      path.lineTo(maY.x, maY.y);
+      ctx.lineWidth = 3;
+      // ctx.stroke(path);
+      if (!ctx.isPointInStroke(path, xx, yy))
+        isPOLCounter += 1
+
+    }
+    if (isPOLCounter === 2)
       drawPixel(ctx, xx, yy, "green", 5)
-
-
     // console.log(min, max, isPOL);
     // for (const edc of [min, max]) {
     //   drawPixel(ctx, edc.x, edc.y, "green", 2)
     // }
+    // var endTime = performance.now()
+
+    // console.log(`calcEdgesFromCircle ->> ${endTime - startTime} ms`)
+  }
+
+  // setupEFC() {
+  //   let tolerance = 1
+  //   let r = 5
+  //   let d = 1
+  //   let n = Math.ceil(2.0 * Math.PI * r / d); // integer number of points (rounded up)
+  //   let da = 2.0 * Math.PI / n;           // floating angular step between points
+  //   let a = 0.0
+  // }
+
+  calcEdgesFromCircle(shapeEdges, xx, yy) {
+    let edgesFromCircle = []
+
+    for (let i = 0; i < this.n; i++, this.setupEFC.a += this.da) {
+      let x = xx + this.setupEFC.r * Math.cos(this.setupEFC.a);
+      let y = yy + this.setupEFC.r * Math.sin(this.setupEFC.a);
+      // here x,y is your point
+      // console.log(x, y);
+      edgesFromCircle.push(
+        ...shapeEdges.filter(
+          v => (
+            v.x <= Math.trunc(x) + this.setupEFC.tolerance && v.x >= Math.trunc(x) - this.setupEFC.tolerance)
+            &&
+            (v.y <= Math.trunc(y) + this.setupEFC.tolerance && v.y >= Math.trunc(y) - this.setupEFC.tolerance)
+        )
+      )
+      // edgesFromCircle.push(...myShapes.shapeEdges.filter(v => v.y === y))
+      // drawPixel(ctx, x, y, "black", 1)
+    }
+    return edgesFromCircle
   }
 
 }
