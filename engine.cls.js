@@ -1,5 +1,4 @@
-import { fillTextMultiLine, prec } from "./common.fn.js";
-import { choseSpriteImage } from "./common.fn.js";
+import { choseSpriteImage, drawPixel, fillTextMultiLine, prec } from "./common.fn.js";
 
 export class MyEngine {
   frame = 0;
@@ -51,13 +50,8 @@ export class MyEngine {
 
     this.oMario.move()
 
-    // if (frame % 4 === 0)
-    //   console.log(this.oMario.isDoNothing())
-
     if (this.oMario.isDoNothing()) {
       this.oMario.xVelocity = 0
-
-      // console.log("nope");
     }
 
     if (this.oMario.yVelocity < 0 || this.oMario.yVelocity > 0) {
@@ -71,7 +65,16 @@ export class MyEngine {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.drawImage(this.images[2], 0, 0);
 
-    // redShapeBottom.map(shape => drawPixel(context, shape.x, shape.y, "black"))
+    drawPixel(this.ctx, this.shapes.shapeEdges[0].x, this.shapes.shapeEdges[0].y, "black", 5)
+    drawPixel(this.ctx, this.shapes.shapeEdges[10].x, this.shapes.shapeEdges[10].y, "black", 5)
+
+    // this.shapes.shapeCorners.map(shape => {
+    //   // console.log(shape.x, shape.y);
+    //   this.ctx.beginPath();
+    //   this.ctx.arc(shape.x, shape.y, 10, 0, 2 * Math.PI);
+    //   this.ctx.stroke();
+    //   drawPixel(this.ctx, shape.x, shape.y, "black")
+    // })
 
     this.oMario.yVelocity += GRAVITY;
 
@@ -92,6 +95,7 @@ export class MyEngine {
     // debugMessage = JSON.stringify({
     let marioActions = this.oMario.action.length > 0 ? this.oMario.action.join(', ') : "DoNothing"
     let debugMessage = `
+      corners: ${this.shapes.shapeCorners.length}
       redShapeXAvg: ${this.shapes.getShapeXAvg()}
       redShapeYAvg: ${this.shapes.getShapeYAvg()}
       code: ${this.oMario.debugCode}
@@ -107,6 +111,7 @@ export class MyEngine {
 
 
     fillTextMultiLine(this.ctx, debugMessage, 10, 50)
+    fillTextMultiLine(this.ctx, this.shapes.debugThis, 1000, 50)
 
     let spriteSheet = this.oMario.xVelocity < 0 ? this.images[1] : this.images[0]
 

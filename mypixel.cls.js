@@ -1,3 +1,4 @@
+
 export class MyPixels {
   // hash = ""
   x = 0;
@@ -18,4 +19,6 @@ export class MyPixels {
     this.neightb.push([new MyPixels(this.x - 1, this.y), new MyPixels(this.x + 1, this.y),])
     this.neightb.push([new MyPixels(this.x - 1, this.y + 1), new MyPixels(this.x, this.y + 1), new MyPixels(this.x + 1, this.y + 1),])
   }
+
+
 }

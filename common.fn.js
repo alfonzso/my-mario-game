@@ -1,13 +1,13 @@
 
 function arrayMin(arr) {
   return arr.reduce(function (p, v) {
-    return (p.y < v.y ? p : v);
+    return (p.x < v.x ? p : v);
   });
 }
 
 function arrayMax(arr) {
   return arr.reduce(function (p, v) {
-    return (p > v ? p : v);
+    return (p.x > v.x ? p : v);
   });
 }
 
@@ -99,11 +99,11 @@ function objIncludes(arr, itemMayIncludes) {
 //   canvas.stroke();
 // }
 
-function drawPixel(context, x, y, color) {
+function drawPixel(context, x, y, color, size = 1) {
   var roundedX = Math.round(x);
   var roundedY = Math.round(y);
   context.fillStyle = color || '#000';
-  context.fillRect(roundedX, roundedY, 5, 5);
+  context.fillRect(roundedX, roundedY, size, size);
 }
 
 async function objHash(text) {
@@ -113,10 +113,24 @@ async function objHash(text) {
   return digest
 }
 
-export{
+function isPointOnLine(px, py, x1, y1, x2, y2, width) {
+  return distancePointFromLine(px, py, x1, y1, x2, y2, width) <= width / 2
+}
+
+function distancePointFromLine(x0, y0, x1, y1, x2, y2) {
+  return Math.abs((x2 - x1) * (y1 - y0) - (x1 - x0) * (y2 - y1)) / Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+}
+
+export {
+  arrayMin,
+  arrayMax,
+  isPointOnLine,
+  distancePointFromLine,
+  distancePointFromLine,
+  drawPixel,
   prec,
   isRed,
-  rgb2hsl ,
+  rgb2hsl,
   xyToBigIndex,
   getHSLFromBigIndex,
   fillTextMultiLine,
