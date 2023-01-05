@@ -111,7 +111,7 @@ export class MyEngine {
 
 
     fillTextMultiLine(this.ctx, debugMessage, 10, 50)
-    fillTextMultiLine(this.ctx, this.shapes.debugThis, 1000, 50)
+    // fillTextMultiLine(this.ctx, this.shapes.debugThis, 1000, 50)
 
     let spriteSheet = this.oMario.xVelocity < 0 ? this.images[1] : this.images[0]
 

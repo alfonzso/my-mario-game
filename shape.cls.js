@@ -122,6 +122,38 @@ export class MyShapes {
     this.shapeRight = this.shapeEdges.filter(v => v.y > redShapeXAvg)
   }
 
+  startYANbc(size = 6, ctx, canvas, cornersOfShape) {
+
+    let data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    let wannabeCorners = []
+    for (const edges of cornersOfShape) {
+      if (this.nbc(edges, size, canvas, ctx, data))
+        wannabeCorners.push(edges)
+    }
+    // console.log(wannabeCorners)
+    // for (const edc of wannabeCorners) {
+    //   drawPixel(ctx, edc.x, edc.y, "black", 5)
+    // }
+
+    let skipElements = []
+    let avgPixelArray = []
+    for (const edc of wannabeCorners) {
+      if (!skipElements.includes(edc)) {
+        let elements = wannabeCorners.filter(v => v.x / edc.x >= 0.980 && v.x / edc.x <= 1.020 && v.y / edc.y >= 0.980 && v.y / edc.y <= 1.020)
+        skipElements.push(...elements, edc)
+        let avgX = elements.map(v => v.x).reduce((p, c) => p + c) / elements.length
+        avgPixelArray.push(elements.find(v => v.x / avgX >= 0.980 && v.x / avgX <= 1.020))
+      }
+
+    }
+    console.log(avgPixelArray);
+    for (const edc of avgPixelArray) {
+      drawPixel(ctx, edc.x, edc.y, "green", 5)
+    }
+
+
+  }
+
   startNbc(size = 6, ctx, cornersOfShape) {
     let wannabeCorners = []
     for (const onePixel of cornersOfShape) {
@@ -169,9 +201,8 @@ export class MyShapes {
   }
 
   // nbc(size = 6, canvas = null, ctx, data, cornersOfShape) {
-  nbc(pixel, size = 6, ctx, cornersOfShape) {
-
-
+  // nbc(pixel, size = 6, ctx, cornersOfShape) {
+  nbc(pixel, size = 6, canvas, ctx, data) {
 
     // let context = canvas.getContext('2d');
     // let data = context.getImageData(0, 0, canvas.width, canvas.height).data;
@@ -203,25 +234,27 @@ export class MyShapes {
     }
 
 
-    // let redOrNotArr = []
-    // for (const row of finalMatrix) {
-    //   let tmpArr = []
-    //   for (const xy of row) {
-    //     let bigIdx = xyToBigIndex(xy.x, xy.y, canvas)
-    //     let hsl = getHSLFromBigIndex(bigIdx, data)
-    //     if (!isRed(...hsl)) {
-    //       // tmpArr.push("R")
-    //       tmpArr.push("0")
-    //     } else {
-    //       // tmpArr.push("*")
-    //       tmpArr.push("1")
-    //     }
+    let _0_counter = 0
+    let _1_counter = 0
+    let redOrNotArr = []
+    for (const row of finalMatrix) {
+      let tmpArr = []
+      for (const xy of row) {
+        let bigIdx = xyToBigIndex(xy.x, xy.y, canvas)
+        let hsl = getHSLFromBigIndex(bigIdx, data)
+        if (!isRed(...hsl)) {
+          tmpArr.push("0")
+          _0_counter += 1
+        } else {
+          tmpArr.push("1")
+          _1_counter += 1
+        }
 
-    //   }
-    //   // tmpArr.reverse()
-    //   redOrNotArr.push(tmpArr)
-    // }
-    // // redOrNotArr.reverse()
+      }
+      // tmpArr.reverse()
+      redOrNotArr.push(tmpArr)
+    }
+    // redOrNotArr.reverse()
 
     // redOrNotArr[size / 2][size / 2] = "X"
 
@@ -229,19 +262,19 @@ export class MyShapes {
     // console.log("K", finalMatrix);
     // console.log("K", redOrNotArr);
 
-    // let dbgArrStr = []
-    // for (const column of redOrNotArr) {
-    //   dbgArrStr.push(column.join(" "))
-    // }
-
-    let ttt = []
-    for (const row of finalMatrix) {
-      for (const xy of row) {
-        let pxl = cornersOfShape.find(v => v.x === xy.x && v.y === xy.y)
-        if (pxl !== undefined)
-          ttt.push(pxl)
-      }
+    let dbgArrStr = []
+    for (const column of redOrNotArr) {
+      dbgArrStr.push(column.join(" "))
     }
+
+    // let ttt = []
+    // for (const row of finalMatrix) {
+    //   for (const xy of row) {
+    //     let pxl = cornersOfShape.find(v => v.x === xy.x && v.y === xy.y)
+    //     if (pxl !== undefined)
+    //       ttt.push(pxl)
+    //   }
+    // }
 
     // console.log(cornersOfShape);
     // console.log(ttt);
@@ -252,31 +285,43 @@ export class MyShapes {
     // for (const idx of ttt) {
 
     // }
-    for (let idx = 0; idx < ttt.length; idx++) {
-      let [x1, y1] = [ttt[idx].x, ttt[idx].y]
-      let [x2, y2] = [ttt[ttt.length - 1 - idx].x, ttt[ttt.length - 1 - idx].y]
-      // }
-      // let [x1, y1] = [min.x, min.y]
-      // let [x2, y2] = [max.x, max.y]
+    // for (let idx = 0; idx < ttt.length; idx++) {
+    //   let [x1, y1] = [ttt[idx].x, ttt[idx].y]
+    //   let [x2, y2] = [ttt[ttt.length - 1 - idx].x, ttt[ttt.length - 1 - idx].y]
+    //   // }
+    //   // let [x1, y1] = [min.x, min.y]
+    //   // let [x2, y2] = [max.x, max.y]
 
-      // console.log(isPointOnLine(this.x, this.y, x1, y1, x2, y2, 1));
+    //   // console.log(isPointOnLine(this.x, this.y, x1, y1, x2, y2, 1));
 
-      // context.lineWidth = 5;
-      // context.moveTo(x1, y1);
-      // context.lineTo(x2, y2);
-      // context.stroke();
+    //   // context.lineWidth = 5;
+    //   // context.moveTo(x1, y1);
+    //   // context.lineTo(x2, y2);
+    //   // context.stroke();
 
-      if (isPointOnLine(pixel.x, pixel.y, x1, y1, x2, y2, 1)) {
-        // console.log(pixel.x, pixel.y);
-        //
-        return null
-      }
-    }
-    return pixel
+    //   if (isPointOnLine(pixel.x, pixel.y, x1, y1, x2, y2, 1)) {
+    //     // console.log(pixel.x, pixel.y);
+    //     //
+    //     return null
+    //   }
+    // }
+    // return pixel
 
     // console.log(dbgArrStr.join("\n"));
-    // return dbgArrStr.join("\n")
+    let _sum = _0_counter + _1_counter
+    let notRedColourAvg = (_0_counter / _sum) * 100
+    if (notRedColourAvg > 51 | notRedColourAvg < 40)
+      return true
+    return false
+    //     let header =
+    //     `0: ${_0_counter} 1: ${_1_counter}
+    // 0: ${(_0_counter/_sum).toPrecision(2)} 1: ${(_1_counter/_sum).toPrecision(2)}
 
+    // `
+    // let debugArray = header + dbgArrStr.join("\n")
+    // let debugArray =  dbgArrStr.join("\n")
+    // console.log(debugArray);
+    // return debugArray
 
   }
 
@@ -368,22 +413,8 @@ export class MyShapes {
 
     for (let i = 0; i < this.n; i++, this.setupEFC.a += this.da) {
       let x = Math.trunc(xx + this.setupEFC.r * Math.cos(this.setupEFC.a))
-      // let x = xx + this.setupEFC.r * Math.cos(this.setupEFC.a)
-      // let _x = x - this.setupEFC.tolerance
-      // let __x = x + this.setupEFC.tolerance
-      // let xARR = [x, _x, __x]
       let y = Math.trunc(yy + this.setupEFC.r * Math.sin(this.setupEFC.a))
-      // let y = yy + this.setupEFC.r * Math.sin(this.setupEFC.a)
-      // let matchedEdges = shapeEdges.filter(v =>
-      //   // v.x <= x + this.setupEFC.tolerance && v.x >= x - this.setupEFC.tolerance
-      //   // xARR.includes(v.x)
-      //   v.x === x
-      //   &&
-      //   v.y === y
-      // )
-      // edgesFromCircle.push(
-      //   ...matchedEdges
-      // )
+
       edgesFromCircle.push(
         ...shapeEdges.filter(
           v =>
@@ -393,7 +424,55 @@ export class MyShapes {
         )
       )
     }
+    // let efc = edgesFromCircle.filter(v => v === undefined).length
+    // if (efc > 0)
+    //   console.log("kkkkk", efc);
     return edgesFromCircle
+  }
+
+  startYACF(shapeEdges, ctx) {
+    let idx = 0
+    this.yacfArray = []
+    let path = new Path2D()
+    this.yacf(shapeEdges[idx].x, shapeEdges[idx].y, shapeEdges, ctx, path)
+  }
+
+  // yet another corner finder
+  yacf(xx, yy, shapeEdges, ctx, path) {
+
+    for (let i = 0; i < this.n; i++, this.setupEFC.a += this.da) {
+      let x = Math.trunc(xx + this.setupEFC.r * Math.cos(this.setupEFC.a))
+      let y = Math.trunc(yy + this.setupEFC.r * Math.sin(this.setupEFC.a))
+
+      // edgesFromCircle.push(
+      this.yacfArray.push(
+        ...shapeEdges.filter(
+          v =>
+            // (v.x <= x + this.setupEFC.tolerance && v.x >= x - this.setupEFC.tolerance)
+            // &&
+            // (v.y <= y + this.setupEFC.tolerance && v.y >= y - this.setupEFC.tolerance)
+            this.isPointOnLine(v.x, v.y, xx, yy, x, y, ctx, path)
+        )
+      )
+    }
+    console.log(yacfArray);
+    // let minX = edgesFromCircle.reduce((p, v) => p.x < v.x ? p : v) //, 0)
+    // let maxX = edgesFromCircle.reduce((p, v) => p.x > v.x ? p : v) //, 0)
+
+    // let minY = edgesFromCircle.reduce((p, v) => p.y < v.y ? p : v) //, 0)
+    // let maxY = edgesFromCircle.reduce((p, v) => p.y > v.y ? p : v) //, 0)
+
+  }
+
+  isPointOnLine(cx, cy, x0, y0, x1, y1, ctx, path = new Path2D()) {
+    // const path = new Path2D();
+    path.moveTo(x0, y0);
+    path.lineTo(x1, y1);
+    ctx.lineWidth = 3;
+    // ctx.stroke(path);
+    return ctx.isPointInStroke(path, cx, cy)
+    // if (!ctx.isPointInStroke(path, cx, cy))
+    //   isPOLCounter += 1
   }
 
 }

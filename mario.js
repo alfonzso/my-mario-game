@@ -2,6 +2,7 @@ import { MyEngine } from "./engine.cls.js";
 import { loadImages } from "./image.loader.js";
 import { MyShapes } from "./shape.cls.js";
 import { drawPixel, isPointOnLine } from "./common.fn.js";
+import { fillTextMultiLine } from "./common.fn.js";
 
 export function startMarioGame(oMario) {
   window.onload = async () => {
@@ -78,9 +79,29 @@ export function startMarioGame(oMario) {
       // }
 
       // myShapes.startNbc(6, ctx, myShapes.shapeEdges)
+
+      // let context = canvas.getContext('2d');
+
+
+      // let wannabeCorners = []
       var startTime = performance.now()
-      myShapes.startCornerFinder(myShapes.shapeEdges, ctx)
+      // for (const edges of myShapes.shapeEdges) {
+      //   let ppp = myShapes.nbc(edges, 26, canvas, ctx, data, myShapes.shapeEdges)
+      //   if (ppp)
+      //     wannabeCorners.push(edges)
+      // }
+      // let debugThis = myShapes.nbc(myShapes.shapeEdges[0], 6, canvas, ctx, data, myShapes.shapeEdges)
+      // myShapes.startCornerFinder(myShapes.shapeEdges, ctx)
+      // myShapes.startYACF(myShapes.shapeEdges, ctx)
+      myShapes.startYANbc(20, ctx, canvas, myShapes.shapeEdges)
       var endTime = performance.now()
+      // console.log(wannabeCorners)
+
+      // for (const edc of wannabeCorners) {
+      //   drawPixel(ctx, edc.x, edc.y, "green", 5)
+      // }
+      // fillTextMultiLine(ctx, debugThis, 1000, 50)
+
 
       console.log(`Call to doSomething took ${endTime - startTime} milliseconds`)
 
