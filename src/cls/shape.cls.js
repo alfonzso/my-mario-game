@@ -1,6 +1,11 @@
-import { arrayMax, arrayMin, drawPixel, getHSLFromBigIndex, isPointOnLine, isRed, rgb2hsl, xyToBigIndex } from "./common.fn.js";
+import {
+  arrayMax, arrayMin,
+  drawPixel, getHSLFromBigIndex,
+  isPointOnLine, isRed, rgb2hsl,
+  xyToBigIndex
+} from "../tools/common.fn.js";
 import { MyPixels } from "./mypixel.cls.js";
-
+  
 
 export class MyShapes {
 

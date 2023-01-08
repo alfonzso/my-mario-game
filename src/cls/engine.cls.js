@@ -1,4 +1,4 @@
-import { choseSpriteImage, drawPixel, fillTextMultiLine, prec } from "./common.fn.js";
+import { choseSpriteImage, drawPixel, fillTextMultiLine, prec } from "../tools/common.fn.js";
 
 export class MyEngine {
   frame = 0;

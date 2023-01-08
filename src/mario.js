@@ -1,8 +1,7 @@
-import { MyEngine } from "./engine.cls.js";
-import { loadImages } from "./image.loader.js";
-import { MyShapes } from "./shape.cls.js";
-import { drawPixel, isPointOnLine } from "./common.fn.js";
-import { fillTextMultiLine } from "./common.fn.js";
+import { MyEngine } from "./cls/engine.cls.js";
+import { loadImages } from "./tools/image.loader.js";
+import { fillTextMultiLine } from "./tools/common.fn.js";
+import { MyShapes } from "./cls/shape.cls.js";
 
 export function startMarioGame(oMario) {
   window.onload = async () => {

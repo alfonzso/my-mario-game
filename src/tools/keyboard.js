@@ -1,6 +1,5 @@
-import { MarioActions } from "./mario.cls.js";
 // Set up keyboard input to control Mario
-export const startKeyboard = (oMario) => {
+export const startKeyboard = (oMario, MarioActions) => {
 
   document.addEventListener("keydown", event => {
     oMario.debugCode = event.code
