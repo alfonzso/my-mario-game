@@ -1,6 +1,6 @@
 import { MyEngine } from "./cls/engine.cls.js";
 import { loadImages } from "./tools/image.loader.js";
-import { fillTextMultiLine } from "./tools/common.fn.js";
+import { fillTextMultiLine, drawPixel } from "./tools/common.fn.js";
 import { MyShapes } from "./cls/shape.cls.js";
 
 export function startMarioGame(oMario) {
@@ -32,57 +32,12 @@ export function startMarioGame(oMario) {
       console.log(myShapes.shapeEdges);
       console.log(myShapes.shapeEdges.length);
 
-      myShapes.calculateTopBottom()
+      // myShapes.calculateTopBottom()
 
-
-      // myShapes.debugThis = myShapes.shapeEdges[0].nbc(10, canvas, myShapes.shapeEdges)
-      // myShapes.shapeEdges[10].nbc(10, canvas, myShapes.shapeEdges)
-
-      console.log(myShapes.shapeEdges.length);
-      // let ctx = canvas.getContext('2d');
-      // let data = context.getImageData(0, 0, canvas.width, canvas.height).data;
-      // myShapes.shapeEdges.map(v => v.nbc(10, canvas, ctx, data, myShapes.shapeEdges))
-      // myShapes.shapeEdges.map(v => v.nbc(10, ctx, myShapes.shapeEdges))
-      // let xx = myShapes.shapeEdges[0].x
-      // let yy = myShapes.shapeEdges[0].y
-
-      // let edgesFromCircle = []
-      // let tolerance = 1
-      // let r = 5
-      // let d = 1
-      // let n = Math.ceil(2.0 * Math.PI * r / d); // integer number of points (rounded up)
-      // let da = 2.0 * Math.PI / n;           // floating angular step between points
-      // let a = 0.0
-      // for (let i = 0; i < n; i++, a += da) {
-      //   let x = xx + r * Math.cos(a);
-      //   let y = yy + r * Math.sin(a);
-      //   // here x,y is your point
-      //   // console.log(x, y);
-      //   edgesFromCircle.push(
-      //     ...myShapes.shapeEdges.filter(
-      //       v => (v.x <= Math.trunc(x) + tolerance && v.x >= Math.trunc(x) - tolerance) && (v.y <= Math.trunc(y) + tolerance && v.y >= Math.trunc(y) - tolerance)
-      //     )
-      //   )
-      //   // edgesFromCircle.push(...myShapes.shapeEdges.filter(v => v.y === y))
-      //   drawPixel(ctx, x, y, "black", 1)
-      // }
-      // console.log(xx, yy, edgesFromCircle);
-      // let min = edgesFromCircle.reduce((p, v) => p.x < v.x ? p : v)
-      // let max = edgesFromCircle.reduce((p, v) => p.x > v.x ? p : v)
-
-      // let isPOL = isPointOnLine(xx, yy, min.x, min.y, max.x, max.y, 1)
-
-      // console.log(min, max, isPOL);
-      // for (const edc of [min, max]) {
-      //   drawPixel(ctx, edc.x, edc.y, "green", 2)
+      // for (const shapes of myShapes.shapeEdges) {
+      //   drawPixel(ctx, shapes.x, shapes.y, "blue", 1)
       // }
 
-      // myShapes.startNbc(6, ctx, myShapes.shapeEdges)
-
-      // let context = canvas.getContext('2d');
-
-
-      // let wannabeCorners = []
 
       let data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
 
@@ -98,7 +53,7 @@ export function startMarioGame(oMario) {
 
       let processedPixels = []
       let nbcV2Idx = 0
-      myShapes.nbcV2(myShapes.shapeEdges[1500], 4, canvas, ctx, data, myShapes.shapeEdges, processedPixels, nbcV2Idx)
+      myShapes.nbcV2(myShapes.shapeEdges[0], 4, canvas, ctx, data, myShapes.shapeEdges, processedPixels, nbcV2Idx)
 
       console.log(processedPixels, "kkkkkk");
       // myShapes.startCornerFinder(myShapes.shapeEdges, ctx)
@@ -133,7 +88,7 @@ export function startMarioGame(oMario) {
             lineFinder = [lineFinder[0], edc]
           }
           if (!res) {
-            console.log(idxOfpP, res);
+            // console.log(idxOfpP, res);
             // drawPixel(ctx, x1, y1, "black", 5)
             // drawPixel(ctx, cx, cy, "blue", 5)
             // drawPixel(ctx, x0, y0, "blue", 5)

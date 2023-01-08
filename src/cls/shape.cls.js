@@ -5,7 +5,7 @@ import {
   xyToBigIndex
 } from "../tools/common.fn.js";
 import { MyPixels } from "./mypixel.cls.js";
-  
+
 
 export class MyShapes {
 
@@ -45,28 +45,43 @@ export class MyShapes {
       }
     }
 
+    console.log("redShapeLen", redShape.length);
+
     let redShapeEdges = []
     let shapeCorners = []
 
+    let contNbc = false
     for (const shape of redShape) {
       shape.neightbourCalculator()
 
       let notRedCounter = 0
       for (const row of shape.neightb) {
+        // if (contNbc)
+        //   break
         for (const xy of row) {
           let bigIdx = xyToBigIndex(xy.x, xy.y, canvas)
           let hsl = getHSLFromBigIndex(bigIdx, data)
           if (!isRed(...hsl)) {
             notRedCounter += 1
+            // contNbc = true
+            // redShapeEdges.push(shape)
+            // break
           }
         }
       }
-      if (notRedCounter >= 3) {
+      // contNbc = false
+      if (notRedCounter > 2) {
         redShapeEdges.push(shape)
       }
-      if (notRedCounter > 4 || (notRedCounter > 1 && notRedCounter < 3)) {
-        shapeCorners.push(shape)
+      if (notRedCounter > 1) {
+        // redShapeEdges.push(shape)
+        // drawPixel(ctx, shape.x, shape.y, "blue", 2)
+        // console.log("keeeeeeeeeeeek");
       }
+
+      // if (notRedCounter > 4 || (notRedCounter > 1 && notRedCounter < 3)) {
+      //   shapeCorners.push(shape)
+      // }
     }
 
     this.shapeEdges = redShapeEdges
@@ -373,12 +388,6 @@ export class MyShapes {
   // nbc(size = 6, canvas = null, ctx, data, cornersOfShape) {
   // nbc(pixel, size = 6, ctx, cornersOfShape) {
   nbcV2(pixel, size = 6, canvas, ctx, data, cos, pP, nbcV2Idx) {
-
-    // if (!pP.includes(pixel))
-    // // pP.length > 0 && pP.filter(v => v.x === pixel.x && v.y === pixel.y)
-    // if (pP.filter(v => v.x === pixel.x && v.y === pixel.y).length > 0)
-    //   return
-
     let finalMatrix = []
     let nbMatrixXAxis = []
 
