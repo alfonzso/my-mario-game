@@ -126,7 +126,6 @@ export {
   arrayMax,
   isPointOnLine,
   distancePointFromLine,
-  distancePointFromLine,
   drawPixel,
   prec,
   isRed,

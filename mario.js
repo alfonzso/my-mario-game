@@ -84,23 +84,74 @@ export function startMarioGame(oMario) {
 
 
       // let wannabeCorners = []
+
+      let data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
       var startTime = performance.now()
       // for (const edges of myShapes.shapeEdges) {
       //   let ppp = myShapes.nbc(edges, 26, canvas, ctx, data, myShapes.shapeEdges)
       //   if (ppp)
       //     wannabeCorners.push(edges)
       // }
-      // let debugThis = myShapes.nbc(myShapes.shapeEdges[0], 6, canvas, ctx, data, myShapes.shapeEdges)
+      let debugThis = myShapes.nbc(myShapes.shapeEdges[0], 30, canvas, ctx, data, myShapes.shapeEdges)
+      let debugThis1 = myShapes.nbc(myShapes.shapeEdges[24], 2, canvas, ctx, data, myShapes.shapeEdges)
+      let debugThis2 = myShapes.nbc(myShapes.shapeEdges[26], 2, canvas, ctx, data, myShapes.shapeEdges)
+
+      let processedPixels = []
+      let nbcV2Idx = 0
+      myShapes.nbcV2(myShapes.shapeEdges[1500], 4, canvas, ctx, data, myShapes.shapeEdges, processedPixels, nbcV2Idx)
+
+      console.log(processedPixels, "kkkkkk");
       // myShapes.startCornerFinder(myShapes.shapeEdges, ctx)
       // myShapes.startYACF(myShapes.shapeEdges, ctx)
-      myShapes.startYANbc(20, ctx, canvas, myShapes.shapeEdges)
+      // myShapes.startYANbc(26, ctx, canvas, myShapes.shapeEdges)
       var endTime = performance.now()
       // console.log(wannabeCorners)
 
-      // for (const edc of wannabeCorners) {
-      //   drawPixel(ctx, edc.x, edc.y, "green", 5)
-      // }
-      // fillTextMultiLine(ctx, debugThis, 1000, 50)
+      let idxOfpP = 0
+      // for (const edc of processedPixels) {
+      let lineFinder = []
+
+      for (let idx = 0; idx < processedPixels.length; idx += 3) {
+        let edc = processedPixels[idx]
+        // drawPixel(ctx, edc.x, edc.y, "green", 5)
+        // ctx.fillText(`${idxOfpP}`, edc.x, edc.y);
+        idxOfpP += 1
+        if (lineFinder.length > 1) {
+          let [cx, cy] = lineFinder.map(v => [v.x, v.y])[0]
+          let [x0, y0] = lineFinder.map(v => [v.x, v.y])[1]
+          // let [x1, y1] = lineFinder.map(v => [v.x, v.y])[2]
+          let [x1, y1] = [edc.x, edc.y]
+
+          // drawPixel(ctx, cx, cy, "yellow", 1)
+          // drawPixel(ctx, x1, y1, "blue", 1)
+
+          // drawPixel(ctx, x0, y0, "green", 1)
+
+          let path = new Path2D()
+          let res = myShapes.isPointOnLine(x0, y0, cx, cy, x1, y1, ctx, path)
+          if (res) {
+            lineFinder = [lineFinder[0], edc]
+          }
+          if (!res) {
+            console.log(idxOfpP, res);
+            // drawPixel(ctx, x1, y1, "black", 5)
+            // drawPixel(ctx, cx, cy, "blue", 5)
+            // drawPixel(ctx, x0, y0, "blue", 5)
+            ctx.beginPath();
+            ctx.arc(x1, y1, 10, 0, 2 * Math.PI);
+            ctx.stroke();
+            lineFinder = []
+          }
+
+          // return
+        } else {
+          lineFinder.push(edc)
+        }
+      }
+      fillTextMultiLine(ctx, debugThis, 1000, 50)
+      fillTextMultiLine(ctx, debugThis1, 800, 500)
+      fillTextMultiLine(ctx, debugThis2, 850, 550)
 
 
       console.log(`Call to doSomething took ${endTime - startTime} milliseconds`)
