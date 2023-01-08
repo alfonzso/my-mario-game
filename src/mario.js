@@ -62,47 +62,9 @@ export function startMarioGame(oMario) {
       var endTime = performance.now()
       // console.log(wannabeCorners)
 
-      let idxOfpP = 0
-      // for (const edc of processedPixels) {
-      let lineFinder = []
+      myShapes.yanewcf(processedPixels, ctx)
+      myShapes.pixelSpacing(processedPixels, ctx)
 
-      for (let idx = 0; idx < processedPixels.length; idx += 3) {
-        let edc = processedPixels[idx]
-        // drawPixel(ctx, edc.x, edc.y, "green", 5)
-        // ctx.fillText(`${idxOfpP}`, edc.x, edc.y);
-        idxOfpP += 1
-        if (lineFinder.length > 1) {
-          let [cx, cy] = lineFinder.map(v => [v.x, v.y])[0]
-          let [x0, y0] = lineFinder.map(v => [v.x, v.y])[1]
-          // let [x1, y1] = lineFinder.map(v => [v.x, v.y])[2]
-          let [x1, y1] = [edc.x, edc.y]
-
-          // drawPixel(ctx, cx, cy, "yellow", 1)
-          // drawPixel(ctx, x1, y1, "blue", 1)
-
-          // drawPixel(ctx, x0, y0, "green", 1)
-
-          let path = new Path2D()
-          let res = myShapes.isPointOnLine(x0, y0, cx, cy, x1, y1, ctx, path)
-          if (res) {
-            lineFinder = [lineFinder[0], edc]
-          }
-          if (!res) {
-            // console.log(idxOfpP, res);
-            // drawPixel(ctx, x1, y1, "black", 5)
-            // drawPixel(ctx, cx, cy, "blue", 5)
-            // drawPixel(ctx, x0, y0, "blue", 5)
-            ctx.beginPath();
-            ctx.arc(x1, y1, 10, 0, 2 * Math.PI);
-            ctx.stroke();
-            lineFinder = []
-          }
-
-          // return
-        } else {
-          lineFinder.push(edc)
-        }
-      }
       fillTextMultiLine(ctx, debugThis, 1000, 50)
       fillTextMultiLine(ctx, debugThis1, 800, 500)
       fillTextMultiLine(ctx, debugThis2, 850, 550)

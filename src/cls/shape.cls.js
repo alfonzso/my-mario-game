@@ -4,7 +4,7 @@ import {
   isPointOnLine, isRed, rgb2hsl,
   xyToBigIndex
 } from "../tools/common.fn.js";
-import { MyPixels } from "./mypixel.cls.js";
+import { MyPixels, OrderedMyPixel } from "./mypixel.cls.js";
 
 
 export class MyShapes {
@@ -459,7 +459,14 @@ export class MyShapes {
     //   return
 
     // { }
-    pP.push(pixel, ...filtered)
+    let lenCalc = pP.length
+    let orPixel = new OrderedMyPixel(pixel, lenCalc)
+    let orderFiltered = []
+    for (const f of filtered) {
+      lenCalc += 1
+      orderFiltered.push(new OrderedMyPixel(f, lenCalc))
+    }
+    pP.push(orPixel, ...orderFiltered)
     // pP.push(pixel)
     // filtered = filtered.filter(v => redOrNotArr.map(vv => vv.y).includes(v.y))
     // if ( pP.length > 5)
@@ -475,7 +482,7 @@ export class MyShapes {
   }
 
   pixelArrayIncludesElement(pxlArray, pixel) {
-    return pxlArray.filter(v => v.x === pixel.x && v.y === pixel.y).length > 0
+    return pxlArray.filter(v => v.pixel.x === pixel.x && v.pixel.y === pixel.y).length > 0
   }
 
   startCornerFinder(shapeEdges, ctx) {
@@ -628,4 +635,91 @@ export class MyShapes {
     //   isPOLCounter += 1
   }
 
+  yanewcf(processedPixels, ctx) {
+    let idxOfpP = 0
+    // for (const edc of processedPixels) {
+    let lineFinder = []
+
+    for (let idx = 0; idx < processedPixels.length; idx += 3) {
+      let edc = processedPixels[idx].pixel
+      // drawPixel(ctx, edc.x, edc.y, "green", 5)
+      // ctx.fillText(`${idxOfpP}`, edc.x, edc.y);
+      idxOfpP += 1
+      if (lineFinder.length > 1) {
+        let [cx, cy] = lineFinder.map(v => [v.x, v.y])[0]
+        let [x0, y0] = lineFinder.map(v => [v.x, v.y])[1]
+        // let [x1, y1] = lineFinder.map(v => [v.x, v.y])[2]
+        let [x1, y1] = [edc.x, edc.y]
+
+        // drawPixel(ctx, cx, cy, "yellow", 1)
+        // drawPixel(ctx, x1, y1, "blue", 1)
+
+        // drawPixel(ctx, x0, y0, "green", 1)
+
+        let path = new Path2D()
+        let res = this.isPointOnLine(x0, y0, cx, cy, x1, y1, ctx, path)
+        if (res) {
+          lineFinder = [lineFinder[0], edc]
+        }
+        if (!res) {
+          // console.log(idxOfpP, res);
+          // drawPixel(ctx, x1, y1, "black", 5)
+          // drawPixel(ctx, cx, cy, "blue", 5)
+          // drawPixel(ctx, x0, y0, "blue", 5)
+          ctx.beginPath();
+          ctx.arc(x1, y1, 10, 0, 2 * Math.PI);
+          ctx.stroke();
+          lineFinder = []
+        }
+
+        // return
+      } else {
+        lineFinder.push(edc)
+      }
+    }
+  }
+
+  pixelSpacing(processedPixels, ctx) {
+    // let idxOfpP = 0
+    // for (const edc of processedPixels) {
+    // let lineFinder = []
+
+    for (let idx = 0; idx < processedPixels.length; idx += 50) {
+      let edc = processedPixels[idx].pixel
+      drawPixel(ctx, edc.x, edc.y, "green", 5)
+      // ctx.fillText(`${idxOfpP}`, edc.x, edc.y);
+      // idxOfpP += 1
+      // if (lineFinder.length > 1) {
+      //   let [cx, cy] = lineFinder.map(v => [v.x, v.y])[0]
+      //   let [x0, y0] = lineFinder.map(v => [v.x, v.y])[1]
+      //   // let [x1, y1] = lineFinder.map(v => [v.x, v.y])[2]
+      //   let [x1, y1] = [edc.x, edc.y]
+
+      //   // drawPixel(ctx, cx, cy, "yellow", 1)
+      //   // drawPixel(ctx, x1, y1, "blue", 1)
+
+      //   // drawPixel(ctx, x0, y0, "green", 1)
+
+      //   let path = new Path2D()
+      //   let res = this.isPointOnLine(x0, y0, cx, cy, x1, y1, ctx, path)
+      //   if (res) {
+      //     lineFinder = [lineFinder[0], edc]
+      //   }
+      //   if (!res) {
+      //     // console.log(idxOfpP, res);
+      //     // drawPixel(ctx, x1, y1, "black", 5)
+      //     // drawPixel(ctx, cx, cy, "blue", 5)
+      //     // drawPixel(ctx, x0, y0, "blue", 5)
+      //     ctx.beginPath();
+      //     ctx.arc(x1, y1, 10, 0, 2 * Math.PI);
+      //     ctx.stroke();
+      //     lineFinder = []
+      //   }
+
+      //   // return
+      // } else {
+      //   lineFinder.push(edc)
+      // }
+    }
+  }
 }
