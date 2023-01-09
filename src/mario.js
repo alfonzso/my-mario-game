@@ -59,17 +59,50 @@ export function startMarioGame(oMario) {
       // myShapes.startCornerFinder(myShapes.shapeEdges, ctx)
       // myShapes.startYACF(myShapes.shapeEdges, ctx)
       // myShapes.startYANbc(26, ctx, canvas, myShapes.shapeEdges)
-      var endTime = performance.now()
       // console.log(wannabeCorners)
+
+      // for (const pp of processedPixels) {
+      //   drawPixel(ctx, pp.pixel.x, pp.pixel.y, "green", 2)
+      // }
+      myShapes.yanewcf(processedPixels, ctx)
+      myShapes.pixelSpacing(processedPixels, ctx)
+      // let k = processedPixels.map(v=> v.pixel.id)
+      // console.log(k);
+      // let kk = new Set(k)
+      // console.log(kk);
+
+      let r = myShapes.shapeEdges.filter(v => processedPixels.find(vv => vv.pixel.id === v.id) === undefined)
+      console.log("newR", r);
+      processedPixels = []
+      nbcV2Idx = 0
+      myShapes.nbcV2(r[0], 4, canvas, ctx, data, r, processedPixels, nbcV2Idx)
 
       myShapes.yanewcf(processedPixels, ctx)
       myShapes.pixelSpacing(processedPixels, ctx)
 
-      fillTextMultiLine(ctx, debugThis, 1000, 50)
-      fillTextMultiLine(ctx, debugThis1, 800, 500)
-      fillTextMultiLine(ctx, debugThis2, 850, 550)
+      r = r.filter(v => processedPixels.find(vv => vv.pixel.id === v.id) === undefined)
+      console.log("newR", r);
+      processedPixels = []
+      nbcV2Idx = 0
+      myShapes.nbcV2(r[0], 4, canvas, ctx, data, r, processedPixels, nbcV2Idx)
 
+      myShapes.yanewcf(processedPixels, ctx)
+      myShapes.pixelSpacing(processedPixels, ctx)
 
+      r = r.filter(v => processedPixels.find(vv => vv.pixel.id === v.id) === undefined)
+      console.log("newR", r);
+      processedPixels = []
+      nbcV2Idx = 0
+      myShapes.nbcV2(r[0], 4, canvas, ctx, data, r, processedPixels, nbcV2Idx)
+
+      myShapes.yanewcf(processedPixels, ctx)
+      myShapes.pixelSpacing(processedPixels, ctx)
+
+      // fillTextMultiLine(ctx, debugThis, 1000, 50)
+      // fillTextMultiLine(ctx, debugThis1, 800, 500)
+      // fillTextMultiLine(ctx, debugThis2, 850, 550)
+
+      var endTime = performance.now()
       console.log(`Call to doSomething took ${endTime - startTime} milliseconds`)
 
       let myEngine = new MyEngine(oMario, ctx, canvas, images)

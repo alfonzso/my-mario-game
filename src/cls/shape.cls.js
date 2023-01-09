@@ -420,16 +420,27 @@ export class MyShapes {
         if (xy.x === pixel.x && xy.y === pixel.y)
           continue
         if (pP.length > 0 && this.pixelArrayIncludesElement(pP, xy)) {
-          // console.log("gotcha");
           continue
         }
         let bigIdx = xyToBigIndex(xy.x, xy.y, canvas)
         let hsl = getHSLFromBigIndex(bigIdx, data)
         if (isRed(...hsl)) {
+
+          // if (pixel.id === "61883")
+          //   console.log("kkkkkkkkkkkkk");
+
+          // if (xy.id === pixel.id)
+          //   console.log("fokkkk");
+
+          // if (pP.filter(v => v.pixel.id === xy.id).length > 0)
+          //   console.log("fokkkk");
           tmpArr.push(xy)
         }
 
       }
+      // let rrr = tmpArr.filter(v=> v.id === "61883").length
+      // if (rrr > 0)
+      //   console.log("rrerere");
       redOrNotArr.push(...tmpArr)
     }
 
@@ -446,6 +457,17 @@ export class MyShapes {
         redOrNotArr.filter(vv => vv.x === v.x && vv.y === v.y).length > 0
     )
 
+    // let rrrpp = pP.filter(v => v.pixel.id === "61883").length
+    // let rrrredOrNotArr = redOrNotArr.filter(v => v.id === "61883").length
+    // let rrr = filtered.filter(v => v.id === "61883").length
+    // if (rrrredOrNotArr > 0)
+    //   console.log("61883 1");
+    // if (rrr > 0)
+    //   console.log("61883 2");
+    // if (rrrpp > 2)
+    //   console.log("61883 x");
+    // if (pixel.id === "61883")
+    //   console.log("61883 3");
 
     if (filtered.length === 0)
       return
@@ -462,23 +484,90 @@ export class MyShapes {
     let lenCalc = pP.length
     let orPixel = new OrderedMyPixel(pixel, lenCalc)
     let orderFiltered = []
+
+    // if (filtered.length === 1)
+    //   console.log("ffiltbig2", filtered);
+
+    // lenCalc += 1
+    // orderFiltered.push(new OrderedMyPixel(filtered[filtered.length - 1], lenCalc))
     for (const f of filtered) {
       lenCalc += 1
+      // orderFiltered.push(new OrderedMyPixel(f, lenCalc))
+      // if (pP.find(v => v.pixel.id === f.id) === undefined)
       orderFiltered.push(new OrderedMyPixel(f, lenCalc))
+      // console.log("fokkkk f");
     }
-    pP.push(orPixel, ...orderFiltered)
+
+
+    // if (pP.filter(v => v.pixel.id === orPixel.pixel.id).length > 0)
+    //   return
+
+    if (pP.find(v => v.pixel.id === orPixel.pixel.id) === undefined)
+      // pP.push(orPixel)
+      pP.push(orPixel, ...orderFiltered)
+
+    // if (orderFiltered.length > 0)
+    //   pP.push(...orderFiltered)
+
+    // console.log("fokkkk orPix");
+    // pP.push(orPixel, ...orderFiltered)
     // pP.push(pixel)
     // filtered = filtered.filter(v => redOrNotArr.map(vv => vv.y).includes(v.y))
     // if ( pP.length > 5)
     //   return
     nbcV2Idx += 1
 
-    for (const f of filtered) {
+    // if (lenCalc >= 539){
+    //   drawPixel(ctx, orPixel.pixel.x, orPixel.pixel.y, "green", 5)
+    //   console.log("kek");
+    // }
+
+    for (const f of orderFiltered) {
       // if (!pP.filter(v => v.x === f.x && v.y === f.y).length > 0)
-      this.nbcV2(f, 4, canvas, ctx, data, cos, pP, nbcV2Idx)
+      this.nbcV2(f.pixel, size, canvas, ctx, data, cos, pP, nbcV2Idx)
+      // if (this.hackthis) {
+      //   this.hackthis = false
+      //   console.log(orderFiltered)
+      // }
     }
     // console.log("v2", filtered);
 
+  }
+  // hackthis = true
+
+  isBetween(a, b, c) {
+    let crossproduct = (c.y - a.y) * (b.x - a.x) - (c.x - a.x) * (b.y - a.y)
+
+    // # compare versus epsilon for floating point values, or != 0 if using integers
+    if (Math.abs(crossproduct) > Number.EPSILON)
+      return false
+
+    let dotproduct = (c.x - a.x) * (b.x - a.x) + (c.y - a.y) * (b.y - a.y)
+    if (dotproduct < 0)
+      return false
+
+    let squaredlengthba = (b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y)
+    if (dotproduct > squaredlengthba)
+      return false
+
+    return true
+  }
+
+  is_on(a, b, c) {
+    // "Return true iff point c intersects the line segment from a to b."
+    // # (or the degenerate case that all 3 points are coincident)
+    return this.collinear(a, b, c) &&
+      (a.x != b.x ? this.within(a.x, c.x, b.x) : this.within(a.y, c.y, b.y))
+  }
+
+  collinear(a, b, c) {
+    // "Return true iff a, b, and c all lie on the same line."
+    return (b.x - a.x) * (c.y - a.y) == (c.x - a.x) * (b.y - a.y)
+  }
+
+  within(p, q, r) {
+    // "Return true iff q is between p and r (inclusive)."
+    return p <= q <= r || r <= q <= p
   }
 
   pixelArrayIncludesElement(pxlArray, pixel) {
@@ -628,7 +717,7 @@ export class MyShapes {
     // const path = new Path2D();
     path.moveTo(x0, y0);
     path.lineTo(x1, y1);
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1;
     // ctx.stroke(path);
     return ctx.isPointInStroke(path, cx, cy)
     // if (!ctx.isPointInStroke(path, cx, cy))
@@ -640,37 +729,65 @@ export class MyShapes {
     // for (const edc of processedPixels) {
     let lineFinder = []
 
-    for (let idx = 0; idx < processedPixels.length; idx += 3) {
+    for (let idx = 0; idx < processedPixels.length; idx += 1) {
       let edc = processedPixels[idx].pixel
       // drawPixel(ctx, edc.x, edc.y, "green", 5)
       // ctx.fillText(`${idxOfpP}`, edc.x, edc.y);
       idxOfpP += 1
       if (lineFinder.length > 1) {
-        let [cx, cy] = lineFinder.map(v => [v.x, v.y])[0]
-        let [x0, y0] = lineFinder.map(v => [v.x, v.y])[1]
+        // let [cx, cy] = lineFinder.map(v => [v.x, v.y])[0]
+        let yellow = lineFinder[0]
+        // let [x0, y0] = lineFinder.map(v => [v.x, v.y])[1]
+        let green = lineFinder[1]
         // let [x1, y1] = lineFinder.map(v => [v.x, v.y])[2]
-        let [x1, y1] = [edc.x, edc.y]
+        // let [x1, y1] = [edc.x, edc.y]
+        let blue = edc
 
-        // drawPixel(ctx, cx, cy, "yellow", 1)
-        // drawPixel(ctx, x1, y1, "blue", 1)
+        // drawPixel(ctx, yellow.x, yellow.y, "yellow", 5)
+        // drawPixel(ctx, green.x, green.y, "blue", 5)
+        // drawPixel(ctx, blue.x, blue.y, "green", 5)
 
-        // drawPixel(ctx, x0, y0, "green", 1)
-
-        let path = new Path2D()
-        let res = this.isPointOnLine(x0, y0, cx, cy, x1, y1, ctx, path)
-        if (res) {
-          lineFinder = [lineFinder[0], edc]
-        }
-        if (!res) {
-          // console.log(idxOfpP, res);
-          // drawPixel(ctx, x1, y1, "black", 5)
-          // drawPixel(ctx, cx, cy, "blue", 5)
-          // drawPixel(ctx, x0, y0, "blue", 5)
+        // let path = new Path2D()
+        // let res = this.isPointOnLine(green.x, green.y, yellow.x, yellow.y, blue.x, blue.y, ctx, path)
+        // if (res) {
+        //   lineFinder = [lineFinder[0], edc]
+        // }
+        // let isB = this.isBetween(yellow, blue, green)
+        // let isB = this.is_on(yellow, blue, green)
+        // if (!isB)
+        //   drawPixel(ctx, blue.x, blue.y, "white", 15)
+        var Dx = blue.x - yellow.x;
+        var Dy = blue.y - yellow.y;
+        var d = Math.abs(Dy * green.x - Dx * green.y - yellow.x * blue.y + blue.x * yellow.y) / Math.sqrt(Math.pow(Dx, 2) + Math.pow(Dy, 2));
+        if (d > 0.75) {
+          // if (d > 0.85 ){
+          // drawPixel(ctx, blue.x, blue.y, "white", 5)
           ctx.beginPath();
-          ctx.arc(x1, y1, 10, 0, 2 * Math.PI);
+          ctx.arc(blue.x, blue.y, 10, 0, 2 * Math.PI);
           ctx.stroke();
           lineFinder = []
+        } else {
+          lineFinder = [lineFinder[0], edc]
         }
+        // if (!res) {
+        //   // console.log(idxOfpP, res);
+        //   // drawPixel(ctx, x1, y1, "black", 5)
+        //   // drawPixel(ctx, cx, cy, "blue", 5)
+        //   // drawPixel(ctx, x0, y0, "blue", 5)
+        //   // let newedc = processedPixels[idx + 1].pixel
+        //   // ctx.beginPath();
+        //   // ctx.fillStyle = 'green';
+        //   // ctx.fillStyle = "blue";
+        //   // ctx.fillRect(10, 10, 100, 100);
+        //   // ctx.arc(cx, cy, 10, 0, 2 * Math.PI);
+        //   // ctx.arc(blue.x, blue.y, 10, 0, 2 * Math.PI);
+        //   // ctx.stroke();
+        //   // ctx.beginPath();
+        //   // ctx.fillStyle = 'black';
+        //   // ctx.arc(newedc.x, newedc.y, 10, 0, 2 * Math.PI);
+        //   // ctx.stroke();
+        //   lineFinder = []
+        // }
 
         // return
       } else {
