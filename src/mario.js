@@ -2,6 +2,7 @@ import { MyEngine } from "./cls/engine.cls.js";
 import { loadImages } from "./tools/image.loader.js";
 import { fillTextMultiLine, drawPixel } from "./tools/common.fn.js";
 import { MyShapes } from "./cls/shape.cls.js";
+import { Shape2D } from "./cls/2Dshape.js";
 
 export function startMarioGame(oMario) {
   window.onload = async () => {
@@ -42,11 +43,7 @@ export function startMarioGame(oMario) {
       let data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
 
       var startTime = performance.now()
-      // for (const edges of myShapes.shapeEdges) {
-      //   let ppp = myShapes.nbc(edges, 26, canvas, ctx, data, myShapes.shapeEdges)
-      //   if (ppp)
-      //     wannabeCorners.push(edges)
-      // }
+
       let debugThis = myShapes.nbc(myShapes.shapeEdges[0], 30, canvas, ctx, data, myShapes.shapeEdges)
       let debugThis1 = myShapes.nbc(myShapes.shapeEdges[24], 2, canvas, ctx, data, myShapes.shapeEdges)
       let debugThis2 = myShapes.nbc(myShapes.shapeEdges[26], 2, canvas, ctx, data, myShapes.shapeEdges)
@@ -54,29 +51,15 @@ export function startMarioGame(oMario) {
       let processedPixels = []
       let nbcV2Idx = 0
       myShapes.nbcV2(myShapes.shapeEdges[0], 4, canvas, ctx, data, myShapes.shapeEdges, processedPixels, nbcV2Idx)
-
-      console.log(processedPixels, "kkkkkk");
-      // myShapes.startCornerFinder(myShapes.shapeEdges, ctx)
-      // myShapes.startYACF(myShapes.shapeEdges, ctx)
-      // myShapes.startYANbc(26, ctx, canvas, myShapes.shapeEdges)
-      // console.log(wannabeCorners)
-
-      // for (const pp of processedPixels) {
-      //   drawPixel(ctx, pp.pixel.x, pp.pixel.y, "green", 2)
-      // }
-      myShapes.yanewcf(processedPixels, ctx)
-      myShapes.pixelSpacing(processedPixels, ctx)
-      // let k = processedPixels.map(v=> v.pixel.id)
-      // console.log(k);
-      // let kk = new Set(k)
-      // console.log(kk);
+      let cArray = myShapes.yanewcf(processedPixels, ctx)
+      let points = myShapes.pixelSpacing(processedPixels, ctx)
+      let newStarShape = new Shape2D(cArray, points)
 
       let r = myShapes.shapeEdges.filter(v => processedPixels.find(vv => vv.pixel.id === v.id) === undefined)
       console.log("newR", r);
       processedPixels = []
       nbcV2Idx = 0
       myShapes.nbcV2(r[0], 4, canvas, ctx, data, r, processedPixels, nbcV2Idx)
-
       myShapes.yanewcf(processedPixels, ctx)
       myShapes.pixelSpacing(processedPixels, ctx)
 
@@ -85,7 +68,6 @@ export function startMarioGame(oMario) {
       processedPixels = []
       nbcV2Idx = 0
       myShapes.nbcV2(r[0], 4, canvas, ctx, data, r, processedPixels, nbcV2Idx)
-
       myShapes.yanewcf(processedPixels, ctx)
       myShapes.pixelSpacing(processedPixels, ctx)
 
@@ -94,9 +76,11 @@ export function startMarioGame(oMario) {
       processedPixels = []
       nbcV2Idx = 0
       myShapes.nbcV2(r[0], 4, canvas, ctx, data, r, processedPixels, nbcV2Idx)
-
       myShapes.yanewcf(processedPixels, ctx)
       myShapes.pixelSpacing(processedPixels, ctx)
+
+      r = r.filter(v => processedPixels.find(vv => vv.pixel.id === v.id) === undefined)
+      console.log(r);
 
       // fillTextMultiLine(ctx, debugThis, 1000, 50)
       // fillTextMultiLine(ctx, debugThis1, 800, 500)
@@ -107,24 +91,6 @@ export function startMarioGame(oMario) {
 
       let myEngine = new MyEngine(oMario, ctx, canvas, images)
       myEngine.setShape(myShapes)
-
-
-
-
-      // const canvas = document.querySelector("canvas");
-      // const ctx = canvas.getContext("2d");
-      // ctx.lineWidth = 5;
-      // let x1, y1, y2 = 0
-      // x1 = y1 = y2 = 20
-      // let x2 = 100
-      // ctx.moveTo(20, 20);
-      // ctx.lineTo(100, 20);
-      // ctx.stroke();
-      // console.log(isPointOnLine(20, 20, x1, y1, x2, y2, 5));
-      // console.log(isPointOnLine(100, 20, x1, y1, x2, y2, 5));
-      // console.log(isPointOnLine(100, 100, x1, y1, x2, y2, 5));
-      // console.log(isPointOnLine(60, 20, x1, y1, x2, y2, 5));
-      // console.log(isPointOnLine(100, 21, x1, y1, x2, y2, 5));
 
       function gameLoopWrapper(timestamp) {
         myEngine.gameLoop(timestamp)

@@ -725,6 +725,7 @@ export class MyShapes {
   }
 
   yanewcf(processedPixels, ctx) {
+    let cornerPosArray = []
     let idxOfpP = 0
     // for (const edc of processedPixels) {
     let lineFinder = []
@@ -762,10 +763,11 @@ export class MyShapes {
         if (d > 0.75) {
           // if (d > 0.85 ){
           // drawPixel(ctx, blue.x, blue.y, "white", 5)
-          ctx.beginPath();
-          ctx.arc(blue.x, blue.y, 10, 0, 2 * Math.PI);
-          ctx.stroke();
+          // ctx.beginPath();
+          // ctx.arc(blue.x, blue.y, 10, 0, 2 * Math.PI);
+          // ctx.stroke();
           lineFinder = []
+          cornerPosArray.push(blue)
         } else {
           lineFinder = [lineFinder[0], edc]
         }
@@ -794,49 +796,16 @@ export class MyShapes {
         lineFinder.push(edc)
       }
     }
+    return cornerPosArray
   }
 
   pixelSpacing(processedPixels, ctx) {
-    // let idxOfpP = 0
-    // for (const edc of processedPixels) {
-    // let lineFinder = []
-
+    let spacedPointsArray = []
     for (let idx = 0; idx < processedPixels.length; idx += 50) {
       let edc = processedPixels[idx].pixel
-      drawPixel(ctx, edc.x, edc.y, "green", 5)
-      // ctx.fillText(`${idxOfpP}`, edc.x, edc.y);
-      // idxOfpP += 1
-      // if (lineFinder.length > 1) {
-      //   let [cx, cy] = lineFinder.map(v => [v.x, v.y])[0]
-      //   let [x0, y0] = lineFinder.map(v => [v.x, v.y])[1]
-      //   // let [x1, y1] = lineFinder.map(v => [v.x, v.y])[2]
-      //   let [x1, y1] = [edc.x, edc.y]
-
-      //   // drawPixel(ctx, cx, cy, "yellow", 1)
-      //   // drawPixel(ctx, x1, y1, "blue", 1)
-
-      //   // drawPixel(ctx, x0, y0, "green", 1)
-
-      //   let path = new Path2D()
-      //   let res = this.isPointOnLine(x0, y0, cx, cy, x1, y1, ctx, path)
-      //   if (res) {
-      //     lineFinder = [lineFinder[0], edc]
-      //   }
-      //   if (!res) {
-      //     // console.log(idxOfpP, res);
-      //     // drawPixel(ctx, x1, y1, "black", 5)
-      //     // drawPixel(ctx, cx, cy, "blue", 5)
-      //     // drawPixel(ctx, x0, y0, "blue", 5)
-      //     ctx.beginPath();
-      //     ctx.arc(x1, y1, 10, 0, 2 * Math.PI);
-      //     ctx.stroke();
-      //     lineFinder = []
-      //   }
-
-      //   // return
-      // } else {
-      //   lineFinder.push(edc)
-      // }
+      // drawPixel(ctx, edc.x, edc.y, "green", 5)
+      spacedPointsArray.push(edc)
     }
+    return spacedPointsArray
   }
 }
