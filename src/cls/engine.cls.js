@@ -65,8 +65,8 @@ export class MyEngine {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.drawImage(this.images[2], 0, 0);
 
-    drawPixel(this.ctx, this.shapes.shapeEdges[0].x, this.shapes.shapeEdges[0].y, "black", 5)
-    drawPixel(this.ctx, this.shapes.shapeEdges[10].x, this.shapes.shapeEdges[10].y, "black", 5)
+    // drawPixel(this.ctx, this.shapes.shapeEdges[0].x, this.shapes.shapeEdges[0].y, "black", 5)
+    // drawPixel(this.ctx, this.shapes.shapeEdges[10].x, this.shapes.shapeEdges[10].y, "black", 5)
 
     // this.shapes.shapeCorners.map(shape => {
     //   // console.log(shape.x, shape.y);
@@ -78,9 +78,11 @@ export class MyEngine {
 
     this.oMario.yVelocity += GRAVITY;
 
-    let [onShape, underShape] = this.shapes.checkShape(this.oMario)
+    // let [onShape, underShape] = this.shapes.checkShape(this.oMario)
+    let onShape = this.shapes.isOnShape(this.oMario)
 
-    if (this.oMario.y + this.oMario.height >= this.canvas.height || onShape !== false || underShape !== false) {
+    // if (this.oMario.y + this.oMario.height >= this.canvas.height || onShape !== false || underShape !== false) {
+    if (this.oMario.y + this.oMario.height >= this.canvas.height || onShape !== false) {
       if (this.oMario.isJumping()) {
         this.oMario.xVelocityBeforeJump = 0
         if (!(this.oMario.isRunningLeft() || this.oMario.isRunningRight())) {
@@ -94,10 +96,10 @@ export class MyEngine {
 
     // debugMessage = JSON.stringify({
     let marioActions = this.oMario.action.length > 0 ? this.oMario.action.join(', ') : "DoNothing"
+    // corners: ${this.shapes.shapeCorners.length}
+    // redShapeXAvg: ${this.shapes.getShapeXAvg()}
+    // redShapeYAvg: ${this.shapes.getShapeYAvg()}
     let debugMessage = `
-      corners: ${this.shapes.shapeCorners.length}
-      redShapeXAvg: ${this.shapes.getShapeXAvg()}
-      redShapeYAvg: ${this.shapes.getShapeYAvg()}
       code: ${this.oMario.debugCode}
       GRAVITY: ${prec(GRAVITY)}
       Frame: ${this.frame}

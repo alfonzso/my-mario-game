@@ -10,9 +10,9 @@ export function startMarioGame(oMario) {
     let myImages = [
       "./backgrounds/mario_sprite_sheet.png",
       "./backgrounds/mario_sprite_sheet_flipped.png",
-      "./backgrounds/mario.bg.moreshape.png"
+      "./backgrounds/mario.bg.png"
     ]
-    // "./backgrounds/mario.bg.png"
+    "./backgrounds/mario.bg.moreshape.png"
 
     loadImages(myImages).then(async images => {
       const canvas = document.getElementById("gameCanvas");
@@ -31,66 +31,24 @@ export function startMarioGame(oMario) {
       await myShapes.shapeFinder(ctx, canvas, images[2])
 
       console.log(myShapes.shapeEdges);
-      console.log(myShapes.shapeEdges.length);
-
-      // myShapes.calculateTopBottom()
-
-      // for (const shapes of myShapes.shapeEdges) {
-      //   drawPixel(ctx, shapes.x, shapes.y, "blue", 1)
-      // }
-
 
       let data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-
       var startTime = performance.now()
 
-      let debugThis = myShapes.nbc(myShapes.shapeEdges[0], 30, canvas, ctx, data, myShapes.shapeEdges)
-      let debugThis1 = myShapes.nbc(myShapes.shapeEdges[24], 2, canvas, ctx, data, myShapes.shapeEdges)
-      let debugThis2 = myShapes.nbc(myShapes.shapeEdges[26], 2, canvas, ctx, data, myShapes.shapeEdges)
+      // myShapes.debugAroundPixel({ pixel: myShapes.shapeEdges[0], size: 30, canvas: canvas, data: data }, { ctx: ctx, x: 1000, y: 50 })
+      // myShapes.debugAroundPixel({ pixel: myShapes.shapeEdges[24], size: 2, canvas: canvas, data: data }, { ctx: ctx, x: 800, y: 500 })
+      // myShapes.debugAroundPixel({ pixel: myShapes.shapeEdges[26], size: 2, canvas: canvas, data: data }, { ctx: ctx, x: 850, y: 550 })
 
-      let processedPixels = []
-      let nbcV2Idx = 0
-      myShapes.nbcV2(myShapes.shapeEdges[0], 4, canvas, ctx, data, myShapes.shapeEdges, processedPixels, nbcV2Idx)
-      let cArray = myShapes.yanewcf(processedPixels, ctx)
-      let points = myShapes.pixelSpacing(processedPixels, ctx)
-      let newStarShape = new Shape2D(cArray, points)
-
-      let r = myShapes.shapeEdges.filter(v => processedPixels.find(vv => vv.pixel.id === v.id) === undefined)
-      console.log("newR", r);
-      processedPixels = []
-      nbcV2Idx = 0
-      myShapes.nbcV2(r[0], 4, canvas, ctx, data, r, processedPixels, nbcV2Idx)
-      myShapes.yanewcf(processedPixels, ctx)
-      myShapes.pixelSpacing(processedPixels, ctx)
-
-      r = r.filter(v => processedPixels.find(vv => vv.pixel.id === v.id) === undefined)
-      console.log("newR", r);
-      processedPixels = []
-      nbcV2Idx = 0
-      myShapes.nbcV2(r[0], 4, canvas, ctx, data, r, processedPixels, nbcV2Idx)
-      myShapes.yanewcf(processedPixels, ctx)
-      myShapes.pixelSpacing(processedPixels, ctx)
-
-      r = r.filter(v => processedPixels.find(vv => vv.pixel.id === v.id) === undefined)
-      console.log("newR", r);
-      processedPixels = []
-      nbcV2Idx = 0
-      myShapes.nbcV2(r[0], 4, canvas, ctx, data, r, processedPixels, nbcV2Idx)
-      myShapes.yanewcf(processedPixels, ctx)
-      myShapes.pixelSpacing(processedPixels, ctx)
-
-      r = r.filter(v => processedPixels.find(vv => vv.pixel.id === v.id) === undefined)
-      console.log(r);
-
-      // fillTextMultiLine(ctx, debugThis, 1000, 50)
-      // fillTextMultiLine(ctx, debugThis1, 800, 500)
-      // fillTextMultiLine(ctx, debugThis2, 850, 550)
+      let shape_2d = new Shape2D()
+      shape_2d.setShapeAndDrawing(myShapes, { ctx, canvas, data })
+      shape_2d.createShapeListFromBackground(myShapes.shapeEdges)
+      shape_2d.drawPoints()
 
       var endTime = performance.now()
       console.log(`Call to doSomething took ${endTime - startTime} milliseconds`)
 
       let myEngine = new MyEngine(oMario, ctx, canvas, images)
-      myEngine.setShape(myShapes)
+      myEngine.setShape(shape_2d)
 
       function gameLoopWrapper(timestamp) {
         myEngine.gameLoop(timestamp)
@@ -98,7 +56,7 @@ export function startMarioGame(oMario) {
 
       }
       // Start the game loop
-      // requestAnimationFrame(gameLoopWrapper);
+      requestAnimationFrame(gameLoopWrapper);
     });
 
   };
