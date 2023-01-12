@@ -14,7 +14,8 @@ function arrayMax(arr) {
 function choseSpriteImage(spriteSheet, frame, frameWidth, oMario) {
   let result = 0
   const spirteX = oMario.xVelocity < 0 ? (spriteSheet.width - frameWidth) - (frame * frameWidth) : (frame * frameWidth)
-  if (oMario.isRunningLeft() || oMario.isRunningRight() || oMario.isDoNothing()) {
+  // if (oMario.isRunningLeft() || oMario.isRunningRight() || oMario.isDoNothing()) {
+  if (oMario.isRunningLeft() || oMario.isRunningRight()) {
     result = spirteX
   }
   if (oMario.isJumping() || oMario.isGoingDown()) {

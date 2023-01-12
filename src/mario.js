@@ -10,9 +10,10 @@ export function startMarioGame(oMario) {
     let myImages = [
       "./backgrounds/mario_sprite_sheet.png",
       "./backgrounds/mario_sprite_sheet_flipped.png",
-      "./backgrounds/mario.bg.png"
+      "./backgrounds/mario.bg.moreshape.png"
     ]
-    "./backgrounds/mario.bg.moreshape.png"
+    // "./backgrounds/mario.bg.bkp1.png"
+    // "./backgrounds/mario.bg.png"
 
     loadImages(myImages).then(async images => {
       const canvas = document.getElementById("gameCanvas");

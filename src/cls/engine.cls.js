@@ -22,6 +22,7 @@ export class MyEngine {
     this.frameWidth = 113;
     this.frameHeight = 113;
     this.frameInterval = 100; // Delay between frames, in milliseconds
+    // this.frameInterval = 1000 / 32; // Delay between frames, in milliseconds
     this.lastFrameTime = 0; // Timestamp of the last frame
 
     this.oMario = oMario
@@ -35,20 +36,49 @@ export class MyEngine {
   }
 
   gameLoop(timestamp) {
-    // Calculate the elapsed time since the last frame
-    const elapsedTime = timestamp - this.lastFrameTime;
+    // const elapsedTime = timestamp - this.lastFrameTime;
+    // // let onShape = this.shapes.isOnShape(this.oMario)
+    // // Update the animation frame if the interval has passed
+    // // if (this.oMario.xVelocity !== 0 && elapsedTime > this.frameInterval) {
 
+    // if (elapsedTime > this.frameInterval) {
+    //   // Increment the frame
+    //   this.frame = (this.frame + 1) % this.numFrames;
+    //   // Reset the last frame time
+    //   this.lastFrameTime = timestamp;
+    this.inGameLoop(timestamp)
+    // }
+  }
+
+  inGameLoop(timestamp) {
+    // Calculate the elapsed time since the last frame
+    // const elapsedTime = timestamp - this.lastFrameTime;
+
+    const elapsedTime = timestamp - this.lastFrameTime;
+    // let onShape = this.shapes.isOnShape(this.oMario)
     // Update the animation frame if the interval has passed
-    if (this.oMario.xVelocity !== 0 && elapsedTime > this.frameInterval) {
+    // if (this.oMario.xVelocity !== 0 && elapsedTime > this.frameInterval) {
+
+    if (elapsedTime > this.frameInterval) {
       // Increment the frame
       this.frame = (this.frame + 1) % this.numFrames;
       // Reset the last frame time
       this.lastFrameTime = timestamp;
-    } else if (this.oMario.xVelocity === 0 && elapsedTime > this.frameInterval) {
-      this.frame = 0
+      // this.inGameLoop(onShape)
     }
 
+    // Update the animation frame if the interval has passed
+    // if (this.oMario.xVelocity !== 0 && elapsedTime > this.frameInterval) {
+    // if (elapsedTime > this.frameInterval) {
+    //   // Increment the frame
+    //   this.frame = (this.frame + 1) % this.numFrames;
+    //   // Reset the last frame time
+    //   this.lastFrameTime = timestamp;
     this.oMario.move()
+
+    // } else if (this.oMario.xVelocity === 0 && elapsedTime > this.frameInterval) {
+    //   this.frame = 0
+
 
     if (this.oMario.isDoNothing()) {
       this.oMario.xVelocity = 0
@@ -80,9 +110,14 @@ export class MyEngine {
 
     // let [onShape, underShape] = this.shapes.checkShape(this.oMario)
     let onShape = this.shapes.isOnShape(this.oMario)
+    // if(onShape !== false){
+    //   drawPixel(this.ctx, this.oMario.x, this.oMario.y, "black", 5)
+    // }
+
 
     // if (this.oMario.y + this.oMario.height >= this.canvas.height || onShape !== false || underShape !== false) {
-    if (this.oMario.y + this.oMario.height >= this.canvas.height || onShape !== false) {
+
+    if (this.oMario.y + this.oMario.height >= this.canvas.height || onShape.res !== false) {
       if (this.oMario.isJumping()) {
         this.oMario.xVelocityBeforeJump = 0
         if (!(this.oMario.isRunningLeft() || this.oMario.isRunningRight())) {
@@ -91,7 +126,7 @@ export class MyEngine {
         this.oMario.removeJumpAction()
       }
       this.oMario.yVelocity = 0;
-      this.oMario.y = (onShape !== false ? onShape.y : this.canvas.height) - this.oMario.height;
+      this.oMario.y = (onShape.res !== false ? onShape.y : this.canvas.height) - this.oMario.height;
     }
 
     // debugMessage = JSON.stringify({
@@ -100,6 +135,7 @@ export class MyEngine {
     // redShapeXAvg: ${this.shapes.getShapeXAvg()}
     // redShapeYAvg: ${this.shapes.getShapeYAvg()}
     let debugMessage = `
+      shapeData: ${JSON.stringify(onShape.data)}
       code: ${this.oMario.debugCode}
       GRAVITY: ${prec(GRAVITY)}
       Frame: ${this.frame}

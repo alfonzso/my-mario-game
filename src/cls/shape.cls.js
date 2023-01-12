@@ -633,7 +633,7 @@ export class MyShapes {
 
   pixelSpacing(processedPixels, ctx) {
     let spacedPointsArray = []
-    for (let idx = 0; idx < processedPixels.length; idx += 50) {
+    for (let idx = 0; idx < processedPixels.length; idx += 75) {
       let edc = processedPixels[idx].pixel
       // drawPixel(ctx, edc.x, edc.y, "green", 5)
       spacedPointsArray.push(processedPixels[idx])
