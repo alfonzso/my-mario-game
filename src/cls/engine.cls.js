@@ -108,16 +108,16 @@ export class MyEngine {
 
     this.oMario.yVelocity += GRAVITY;
 
-    // let [onShape, underShape] = this.shapes.checkShape(this.oMario)
-    let onShape = this.shapes.isOnShape(this.oMario)
+    let [onShape, underShape] = this.shapes.checkShape(this.oMario)
+    // let onShape = this.shapes.isOnShape(this.oMario)
     // if(onShape !== false){
     //   drawPixel(this.ctx, this.oMario.x, this.oMario.y, "black", 5)
     // }
 
 
-    // if (this.oMario.y + this.oMario.height >= this.canvas.height || onShape !== false || underShape !== false) {
+    if (this.oMario.y + this.oMario.height >= this.canvas.height || onShape.res !== false || underShape.res !== false) {
 
-    if (this.oMario.y + this.oMario.height >= this.canvas.height || onShape.res !== false) {
+    // if (this.oMario.y + this.oMario.height >= this.canvas.height || onShape.res !== false) {
       if (this.oMario.isJumping()) {
         this.oMario.xVelocityBeforeJump = 0
         if (!(this.oMario.isRunningLeft() || this.oMario.isRunningRight())) {

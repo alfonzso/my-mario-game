@@ -6,6 +6,12 @@ class Shape2D {
   spacedPoints = []
   allPixelArray = []
   shape = null
+
+  shapeTop = null
+  shapeBottom = null
+  shapeLeft = null
+  shapeRight = null
+
   drawing = {}
 
   constructor() {
@@ -20,6 +26,7 @@ class Shape2D {
     this.cornerArray = cornerArray
     this.spacedPoints = spacedPoints
     this.allPixelArray = [...cornerArray, ...spacedPoints].sort((a, b) => a.orderNumber - b.orderNumber)
+    this.calculateTopBottom()
     return this
   }
 
@@ -89,75 +96,73 @@ class Shape2D {
     }
   }
 
+  calculateTopBottom() {
+    let redShapeXAvg = this.allPixelArray.map(v => v.pixel.x).reduce((p, c) => p + c) / this.allPixelArray.length
+    let redShapeYAvg = this.allPixelArray.map(v => v.pixel.y).reduce((p, c) => p + c) / this.allPixelArray.length
 
-  isOnShape(oMario) {
-    let isThere = null
+    this.shapeTop = this.allPixelArray.filter(v => v.pixel.y < redShapeYAvg)
+    this.shapeBottom = this.allPixelArray.filter(v => v.pixel.y > redShapeYAvg)
+
+    this.shapeLeft = this.allPixelArray.filter(v => v.pixel.x < redShapeXAvg)
+    this.shapeRight = this.allPixelArray.filter(v => v.pixel.y > redShapeXAvg)
+  }
+
+  calcShapePointsAndMarioDistance(oMario, orientation, resultTrue, resultFalse) {
     for (const shape2D of this.shape2DList) {
-      // console.log(shape2D);
-      // for (const pixels of shape2D.allPixelArray) {
-      for (let index = 0; index < shape2D.allPixelArray.length; index += 1) {
-        if (index + 1 > shape2D.allPixelArray.length - 1)
+      let topOrBottom = shape2D[orientation]
+      for (let index = 0; index < topOrBottom.length; index += 1) {
+        if (index + 1 > topOrBottom.length - 1)
           break
-        let begining = shape2D.allPixelArray[index].pixel
-        let ending = shape2D.allPixelArray[index + 1].pixel
 
-        // let ordNum1 = shape2D.allPixelArray[index + 1].orderNumber
-        // let ordNum = shape2D.allPixelArray[index].orderNumber
-        // if (ordNum1 - ordNum < 90) {
-        //   index += 1
-        //   continue
-        // }
-
-        drawPixel(this.drawing.ctx, begining.x, begining.y, "white", 20)
-        drawPixel(this.drawing.ctx, ending.x, ending.y, "blue", 10)
-        // this.drawing.ctx.fillText(`${pixels.orderNumber}`, pixels.pixel.x, pixels.pixel.y);
-        // drawPixel(this.drawing.ctx, pixels.pixel.x, pixels.pixel.y, "black", 5)
-        var Dx = ending.x - begining.x;
-        var Dy = ending.y - begining.y;
-        // var
-        // if (Dx === 0)
-        //   Dx = 1
-        // if (Dy === 0)
-        //   Dy = 1
-        // var Dx = begining.x - ending.x;
-        // var Dy = begining.y - ending.y;
+        let begining = topOrBottom[index].pixel
+        let ending = topOrBottom[index + 1].pixel
         var avgX = (begining.x + ending.x) / 2
         var avgY = (begining.y + ending.y) / 2
-        drawPixel(this.drawing.ctx, avgX, avgY, "black", 5)
 
-        // let fixMario = { x : oMario.x , y: oMario.y}
+        drawPixel(this.drawing.ctx, begining.x, begining.y, "white", 3)
+        drawPixel(this.drawing.ctx, ending.x, ending.y, "blue", 2)
+        drawPixel(this.drawing.ctx, avgX, avgY, "black", 1)
+
         let fixMario = { x: Math.trunc(oMario.x + (oMario.width / 2)), y: oMario.y + oMario.height }
-        let neww = this.calcIsInsideThickLineSegment(begining, ending, fixMario, 15)
-
-        var d = Math.abs(Dy * (oMario.x === 0 ? 1 : oMario.x) - Dx * oMario.y - begining.x * ending.y + ending.x * begining.y) / Math.sqrt(Math.pow(Dx, 2) + Math.pow(Dy, 2));
-        // isThere = this.isPointOnLine(oMario.x, oMario.y, begining.x, begining.y, ending.x, ending.y, this.drawing.ctx, new Path2D())
-        // if (d < 0.75) {
-        // if (d < 5) {
-        if (neww) {
-          // if (isThere) {
-          // return { x: oMario.x, y: oMario.y }
-          // return { x: avgX, y: avgY }
-          // this.sleep(5000)
-
-          return {
-            // res: true, x: begining.x, y: begining.y, data: { dx: Dx, dy: Dy, d: d }
-            // res: true, x: avgX, y: avgY, data: { dx: Dx, dy: Dy, d: d }
-            res: true, x: fixMario.x, y: fixMario.y, data: { dx: Dx, dy: Dy, d: d }
-            // res: true, x: begining.x, y: begining.y, data: { isThere: isThere }
-          }
-          // console.log(d);
+        if (this.calcIsInsideThickLineSegment(begining, ending, fixMario, 15)) {
+          return resultTrue(true, fixMario, {})
         }
-        // else{
-        //   console.log("fukkk");
-        // }
-        // return {
-        //   res: false, x: begining.x, y: begining.y, data: { dx: Dx, dy: Dy, d: d, inner: true }
-        //   // res: true, x: begining.x, y: begining.y, data: { isThere: isThere }
-        // }
       }
     }
-    return { res: false, data: { dx: Dx, dy: Dy, d: d } }
-    // return { res: false, data: { isThere: isThere } }
+    return resultFalse(false)
+  }
+
+  checkShape(oMario) {
+    return [this.isOnShape(oMario), this.isUnderShape(oMario)]
+  }
+
+  isUnderShape(oMario) {
+    function resultTrue(res, fixedMario, data) {
+      oMario.yVelocity = Math.abs(oMario.yVelocity)
+      return {
+        res: false, x: fixedMario.x, y: fixedMario.y, data
+      }
+    }
+    function resultFalse(res) {
+      return {
+        res: false
+      }
+    }
+    return this.calcShapePointsAndMarioDistance(oMario, "shapeBottom", resultTrue, resultFalse)
+  }
+
+  isOnShape(oMario) {
+    function resultTrue(res, fixedMario, data) {
+      return {
+        res, x: fixedMario.x, y: fixedMario.y, data
+      }
+    }
+    function resultFalse(res) {
+      return {
+        res
+      }
+    }
+    return this.calcShapePointsAndMarioDistance(oMario, "shapeTop", resultTrue, resultFalse)
   }
 
   sleep(ms) {
