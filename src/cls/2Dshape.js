@@ -118,13 +118,20 @@ class Shape2D {
         let ending = topOrBottom[index + 1].pixel
         var avgX = (begining.x + ending.x) / 2
         var avgY = (begining.y + ending.y) / 2
+        let fakePixel = { x: avgX, y: avgY }
 
         drawPixel(this.drawing.ctx, begining.x, begining.y, "white", 3)
         drawPixel(this.drawing.ctx, ending.x, ending.y, "blue", 2)
-        drawPixel(this.drawing.ctx, avgX, avgY, "black", 1)
+        drawPixel(this.drawing.ctx, avgX, avgY, "black", 5)
 
         let fixMario = { x: Math.trunc(oMario.x + (oMario.width / 2)), y: oMario.y + oMario.height }
-        if (this.calcIsInsideThickLineSegment(begining, ending, fixMario, 15)) {
+        if (
+          this.calcIsInsideThickLineSegment(begining, ending, fixMario, 15)
+          ||
+          this.calcIsInsideThickLineSegment(fakePixel, ending, fixMario, 15)
+          ||
+          this.calcIsInsideThickLineSegment(begining, fakePixel, fixMario, 15)
+        ) {
           return resultTrue(true, fixMario, {})
         }
       }

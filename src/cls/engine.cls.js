@@ -16,14 +16,14 @@ export class MyEngine {
   shapes = null
 
   constructor(oMario, ctx, canvas, images) {
-    // Set up the animation variables
+
     this.frame = 0;
     this.numFrames = 4;
     this.frameWidth = 113;
     this.frameHeight = 113;
-    this.frameInterval = 100; // Delay between frames, in milliseconds
-    // this.frameInterval = 1000 / 32; // Delay between frames, in milliseconds
-    this.lastFrameTime = 0; // Timestamp of the last frame
+    this.frameInterval = 100;
+
+    this.lastFrameTime = 0;
 
     this.oMario = oMario
     this.ctx = ctx
@@ -36,49 +36,18 @@ export class MyEngine {
   }
 
   gameLoop(timestamp) {
-    // const elapsedTime = timestamp - this.lastFrameTime;
-    // // let onShape = this.shapes.isOnShape(this.oMario)
-    // // Update the animation frame if the interval has passed
-    // // if (this.oMario.xVelocity !== 0 && elapsedTime > this.frameInterval) {
-
-    // if (elapsedTime > this.frameInterval) {
-    //   // Increment the frame
-    //   this.frame = (this.frame + 1) % this.numFrames;
-    //   // Reset the last frame time
-    //   this.lastFrameTime = timestamp;
     this.inGameLoop(timestamp)
-    // }
   }
 
   inGameLoop(timestamp) {
-    // Calculate the elapsed time since the last frame
-    // const elapsedTime = timestamp - this.lastFrameTime;
-
     const elapsedTime = timestamp - this.lastFrameTime;
-    // let onShape = this.shapes.isOnShape(this.oMario)
-    // Update the animation frame if the interval has passed
-    // if (this.oMario.xVelocity !== 0 && elapsedTime > this.frameInterval) {
 
     if (elapsedTime > this.frameInterval) {
-      // Increment the frame
       this.frame = (this.frame + 1) % this.numFrames;
-      // Reset the last frame time
       this.lastFrameTime = timestamp;
-      // this.inGameLoop(onShape)
     }
 
-    // Update the animation frame if the interval has passed
-    // if (this.oMario.xVelocity !== 0 && elapsedTime > this.frameInterval) {
-    // if (elapsedTime > this.frameInterval) {
-    //   // Increment the frame
-    //   this.frame = (this.frame + 1) % this.numFrames;
-    //   // Reset the last frame time
-    //   this.lastFrameTime = timestamp;
     this.oMario.move()
-
-    // } else if (this.oMario.xVelocity === 0 && elapsedTime > this.frameInterval) {
-    //   this.frame = 0
-
 
     if (this.oMario.isDoNothing()) {
       this.oMario.xVelocity = 0
@@ -91,33 +60,16 @@ export class MyEngine {
       this.oMario.xVelocity = this.oMario.xVelocityBeforeJump
     }
 
-    // Clear the canvas
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.drawImage(this.images[2], 0, 0);
 
-    // drawPixel(this.ctx, this.shapes.shapeEdges[0].x, this.shapes.shapeEdges[0].y, "black", 5)
-    // drawPixel(this.ctx, this.shapes.shapeEdges[10].x, this.shapes.shapeEdges[10].y, "black", 5)
-
-    // this.shapes.shapeCorners.map(shape => {
-    //   // console.log(shape.x, shape.y);
-    //   this.ctx.beginPath();
-    //   this.ctx.arc(shape.x, shape.y, 10, 0, 2 * Math.PI);
-    //   this.ctx.stroke();
-    //   drawPixel(this.ctx, shape.x, shape.y, "black")
-    // })
 
     this.oMario.yVelocity += GRAVITY;
 
     let [onShape, underShape] = this.shapes.checkShape(this.oMario)
-    // let onShape = this.shapes.isOnShape(this.oMario)
-    // if(onShape !== false){
-    //   drawPixel(this.ctx, this.oMario.x, this.oMario.y, "black", 5)
-    // }
-
 
     if (this.oMario.y + this.oMario.height >= this.canvas.height || onShape.res !== false || underShape.res !== false) {
 
-    // if (this.oMario.y + this.oMario.height >= this.canvas.height || onShape.res !== false) {
       if (this.oMario.isJumping()) {
         this.oMario.xVelocityBeforeJump = 0
         if (!(this.oMario.isRunningLeft() || this.oMario.isRunningRight())) {
@@ -129,11 +81,8 @@ export class MyEngine {
       this.oMario.y = (onShape.res !== false ? onShape.y : this.canvas.height) - this.oMario.height;
     }
 
-    // debugMessage = JSON.stringify({
     let marioActions = this.oMario.action.length > 0 ? this.oMario.action.join(', ') : "DoNothing"
-    // corners: ${this.shapes.shapeCorners.length}
-    // redShapeXAvg: ${this.shapes.getShapeXAvg()}
-    // redShapeYAvg: ${this.shapes.getShapeYAvg()}
+
     let debugMessage = `
       shapeData: ${JSON.stringify(onShape.data)}
       code: ${this.oMario.debugCode}
@@ -145,32 +94,23 @@ export class MyEngine {
       xVelocityBeforeJump: ${this.oMario.xVelocityBeforeJump}
       DeltaV: X ${prec(this.oMario.xVelocity)} Y ${prec(this.oMario.yVelocity)} Yb ${prec(this.oMario.xVelocityBeforeJump)}
     `
-    // this.ctx.fillText(debugMessage, 10, 50);
-
 
     fillTextMultiLine(this.ctx, debugMessage, 10, 50)
-    // fillTextMultiLine(this.ctx, this.shapes.debugThis, 1000, 50)
 
     let spriteSheet = this.oMario.xVelocity < 0 ? this.images[1] : this.images[0]
 
     this.ctx.drawImage(
       spriteSheet,
-      choseSpriteImage(spriteSheet, this.frame, this.frameWidth, this.oMario), // x position of the frame on the sprite sheet
-      165, // y position of the frame on the sprite sheet
-      this.frameWidth, // width of the frame
-      this.frameHeight, // height of the frame
-      this.oMario.x, // x position on the canvas to draw the frame
-      this.oMario.y, // y position on the canvas to draw the frame
-      this.oMario.width, // width to draw the frame on the canvas
-      this.oMario.height // height to draw the frame on the canvas
+      choseSpriteImage(spriteSheet, this.frame, this.frameWidth, this.oMario),
+      165,
+      this.frameWidth,
+      this.frameHeight,
+      this.oMario.x,
+      this.oMario.y,
+      this.oMario.width,
+      this.oMario.height
     );
 
-    // function gameLoopWrapper(timestamp) {
-    //   this.gameLoop(timestamp)
-    // }
-
-    // Request the next frame of the game loop
-    // requestAnimationFrame(gameLoopWrapper);
   }
 
 }

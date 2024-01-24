@@ -14,14 +14,14 @@ function arrayMax(arr) {
 function choseSpriteImage(spriteSheet, frame, frameWidth, oMario) {
   let result = 0
   const spirteX = oMario.xVelocity < 0 ? (spriteSheet.width - frameWidth) - (frame * frameWidth) : (frame * frameWidth)
-  // if (oMario.isRunningLeft() || oMario.isRunningRight() || oMario.isDoNothing()) {
+
   if (oMario.isRunningLeft() || oMario.isRunningRight()) {
     result = spirteX
   }
   if (oMario.isJumping() || oMario.isGoingDown()) {
     result = oMario.xVelocity < 0 ? 635 : 465
   }
-  // console.log(result)
+
   return result
 }
 
@@ -37,12 +37,6 @@ function fillTextMultiLine(ctx, text, x, y) {
 function prec(x) {
   return x.toPrecision(4);
 }
-
-// function rgb2hsl(r, g, b) {
-//   let v = Math.max(r, g, b), c = v - Math.min(r, g, b), f = (1 - Math.abs(v + v - c - 1));
-//   let h = c && ((v == r) ? (g - b) / c : ((v == g) ? 2 + (b - r) / c : 4 + (r - g) / c));
-//   return [60 * (h < 0 ? h + 6 : h), f ? c / f : 0, (v + v - c) / 2];
-// }
 
 const rgb2hsl = (r, g, b) => {
   r /= 255;
@@ -92,13 +86,6 @@ function objIncludes(arr, itemMayIncludes) {
   }
   return false
 }
-
-// function point(x, y, canvas) {
-//   canvas.beginPath();
-//   canvas.moveTo(x, y);
-//   canvas.lineTo(x + 1, y + 1);
-//   canvas.stroke();
-// }
 
 function drawPixel(context, x, y, color, size = 1) {
   var roundedX = Math.round(x);
