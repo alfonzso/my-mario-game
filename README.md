@@ -2,7 +2,7 @@
 
 Features:
 * gravity
-* keyboard handling (WASD + SPACE)
+* keyboard handling ( ARROWS + SPACE)
 * mario sprite sheets
 * shape recognitions (not perfect)
 
