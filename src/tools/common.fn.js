@@ -26,9 +26,9 @@ function choseSpriteImage(spriteSheet, frame, frameWidth, oMario) {
 }
 
 function fillTextMultiLine(ctx, text, x, y) {
-  var lineHeight = ctx.measureText("M").width * 1.2;
-  var lines = text.split("\n");
-  for (var i = 0; i < lines.length; ++i) {
+  let lineHeight = ctx.measureText("M").width * 1.2;
+  let lines = text.split("\n");
+  for (let i = 0; i < lines.length; ++i) {
     ctx.fillText(lines[i], x, y);
     y += lineHeight;
   }
@@ -88,8 +88,8 @@ function objIncludes(arr, itemMayIncludes) {
 }
 
 function drawPixel(context, x, y, color, size = 1) {
-  var roundedX = Math.round(x);
-  var roundedY = Math.round(y);
+  let roundedX = Math.round(x);
+  let roundedY = Math.round(y);
   context.fillStyle = color || '#000';
   context.fillRect(roundedX, roundedY, size, size);
 }

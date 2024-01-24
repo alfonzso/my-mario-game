@@ -28,14 +28,14 @@ export function startMarioGame(oMario) {
       console.log(myShapes.shapeEdges);
 
       let data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-      var startTime = performance.now()
+      let startTime = performance.now()
 
       let shape_2d = new Shape2D()
       shape_2d.setShapeAndDrawing(myShapes, { ctx, canvas, data })
       shape_2d.createShapeListFromBackground(myShapes.shapeEdges)
       shape_2d.drawPoints()
 
-      var endTime = performance.now()
+      let endTime = performance.now()
       console.log(`Call to doSomething took ${endTime - startTime} milliseconds`)
 
       let myEngine = new MyEngine(oMario, ctx, canvas, images)

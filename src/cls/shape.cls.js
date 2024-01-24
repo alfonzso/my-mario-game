@@ -146,13 +146,13 @@ export class MyShapes {
         let avgX = elements.map(v => v.x).reduce((p, c) => p + c) / elements.length
         let avgY = elements.map(v => v.y).reduce((p, c) => p + c) / elements.length
 
-        var avgPixel = elements.reduce(function (prev, curr) {
+        let avgPixel = elements.reduce(function (prev, curr) {
           return (
             Math.abs(curr.x - avgX) < Math.abs(prev.x - avgX) ? curr : prev
           )
         });
 
-        var avgPixelY = elements.reduce(function (prev, curr) {
+        let avgPixelY = elements.reduce(function (prev, curr) {
           return (
             Math.abs(curr.y - avgY) < Math.abs(prev.y - avgY) ? curr : prev
           )
@@ -468,9 +468,9 @@ export class MyShapes {
         let green = lineFinder[1]
         let blue = edc
 
-        var Dx = blue.x - yellow.x;
-        var Dy = blue.y - yellow.y;
-        var d = Math.abs(Dy * green.x - Dx * green.y - yellow.x * blue.y + blue.x * yellow.y) / Math.sqrt(Math.pow(Dx, 2) + Math.pow(Dy, 2));
+        let Dx = blue.x - yellow.x;
+        let Dy = blue.y - yellow.y;
+        let d = Math.abs(Dy * green.x - Dx * green.y - yellow.x * blue.y + blue.x * yellow.y) / Math.sqrt(Math.pow(Dx, 2) + Math.pow(Dy, 2));
         if (d > 0.75) {
           lineFinder = []
           cornerPosArray.push(processedPixels[idx])

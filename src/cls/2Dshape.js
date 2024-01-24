@@ -78,9 +78,9 @@ class Shape2D {
   }
 
   calcIsInsideThickLineSegment(line1, line2, pnt, lineThickness) {
-    var L2 = (((line2.x - line1.x) * (line2.x - line1.x)) + ((line2.y - line1.y) * (line2.y - line1.y)));
+    let L2 = (((line2.x - line1.x) * (line2.x - line1.x)) + ((line2.y - line1.y) * (line2.y - line1.y)));
     if (L2 == 0) return false;
-    var r = (((pnt.x - line1.x) * (line2.x - line1.x)) + ((pnt.y - line1.y) * (line2.y - line1.y))) / L2;
+    let r = (((pnt.x - line1.x) * (line2.x - line1.x)) + ((pnt.y - line1.y) * (line2.y - line1.y))) / L2;
 
     //Assume line thickness is circular
     if (r < 0) {
@@ -88,7 +88,7 @@ class Shape2D {
       return (Math.sqrt(((line1.x - pnt.x) * (line1.x - pnt.x)) + ((line1.y - pnt.y) * (line1.y - pnt.y))) <= lineThickness);
     } else if ((0 <= r) && (r <= 1)) {
       //On the line segment
-      var s = (((line1.y - pnt.y) * (line2.x - line1.x)) - ((line1.x - pnt.x) * (line2.y - line1.y))) / L2;
+      let s = (((line1.y - pnt.y) * (line2.x - line1.x)) - ((line1.x - pnt.x) * (line2.y - line1.y))) / L2;
       return (Math.abs(s) * Math.sqrt(L2) <= lineThickness);
     } else {
       //Outside line2
@@ -116,8 +116,8 @@ class Shape2D {
 
         let begining = topOrBottom[index].pixel
         let ending = topOrBottom[index + 1].pixel
-        var avgX = (begining.x + ending.x) / 2
-        var avgY = (begining.y + ending.y) / 2
+        let avgX = (begining.x + ending.x) / 2
+        let avgY = (begining.y + ending.y) / 2
         let fakePixel = { x: avgX, y: avgY }
 
         drawPixel(this.drawing.ctx, begining.x, begining.y, "white", 3)
