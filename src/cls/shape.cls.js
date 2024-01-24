@@ -211,7 +211,6 @@ export class MyShapes {
       idxCounter -= 1
     }
 
-    console.log("tttt", tmpAaaa.length);
     return reducedNumberOfCorners
   }
 
@@ -428,7 +427,7 @@ export class MyShapes {
     this.yacf(shapeEdges[idx].x, shapeEdges[idx].y, shapeEdges, ctx, path)
   }
 
-// yet another corner finder
+  // yet another corner finder
   yacf(xx, yy, shapeEdges, ctx, path) {
 
     for (let i = 0; i < this.n; i++, this.setupEFC.a += this.da) {
