@@ -11,8 +11,8 @@ class Mario {
   yB = 0;
   x = 0;
   y = 0;
-  width = 32 * 2;
-  height = 32 * 2;
+  width = 64;
+  height = 64;
   xVelocity = 0;
   yVelocity = 0;
   action = []

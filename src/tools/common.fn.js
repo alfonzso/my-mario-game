@@ -1,4 +1,9 @@
 
+export const sleep = (ms) => {
+  // sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function arrayMin(arr) {
   return arr.reduce(function (p, v) {
     return (p.x < v.x || p.y < v.y ? p : v);

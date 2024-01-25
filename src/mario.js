@@ -8,8 +8,11 @@ export function startMarioGame(oMario) {
 
     let myImages = [
       "./backgrounds/mario_sprite_sheet.png",
+      // "./backgrounds/mario_sprite_sheet_orig_edited.png",
       "./backgrounds/mario_sprite_sheet_flipped.png",
-      "./backgrounds/mario.bg.moreshape.png"
+      // "./backgrounds/mario.bg.moreshape.png"
+      // "./backgrounds/mario.bg.bkp.v1.png"
+      "./backgrounds/mario.bg.moreshape.v1.png"
     ]
 
     loadImages(myImages).then(async images => {
@@ -25,10 +28,11 @@ export function startMarioGame(oMario) {
       let myShapes = new MyShapes()
       await myShapes.shapeFinder(ctx, canvas, images[2])
 
-      console.log(myShapes.shapeEdges);
+      console.log(" -> myShapes.shapeEdges -> ", myShapes.shapeEdges);
 
       let data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
       let startTime = performance.now()
+      console.log(" -> myShapes.shapeEdges data-> ", data);
 
       let shape_2d = new Shape2D()
       shape_2d.setShapeAndDrawing(myShapes, { ctx, canvas, data })
@@ -44,7 +48,6 @@ export function startMarioGame(oMario) {
       function gameLoopWrapper(timestamp) {
         myEngine.gameLoop(timestamp)
         requestAnimationFrame(gameLoopWrapper);
-
       }
 
       requestAnimationFrame(gameLoopWrapper);

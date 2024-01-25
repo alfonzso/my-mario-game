@@ -44,7 +44,6 @@ export class MyShapes {
     let redShapeEdges = []
     let shapeCorners = []
 
-    let contNbc = false
     for (const shape of redShape) {
       shape.neightbourCalculator()
 
@@ -64,9 +63,6 @@ export class MyShapes {
       if (notRedCounter > 2) {
         redShapeEdges.push(shape)
       }
-      if (notRedCounter > 1) {
-
-      }
 
     }
 
@@ -75,12 +71,10 @@ export class MyShapes {
   }
 
   getShapeXAvg() {
-
     return this.shapeEdges.map(v => v.x).reduce((p, c) => p + c) / this.shapeEdges.length
   }
 
   getShapeYAvg() {
-
     return this.shapeEdges.map(v => v.y).reduce((p, c) => p + c) / this.shapeEdges.length
   }
 
@@ -126,7 +120,7 @@ export class MyShapes {
     this.shapeRight = this.shapeEdges.filter(v => v.y > redShapeXAvg)
   }
 
-  startYANbc(size = 6, ctx, canvas, cornersOfShape) {
+/*   startYANbc(size = 6, ctx, canvas, cornersOfShape) {
 
     let data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
     let wannabeCorners = []
@@ -174,9 +168,9 @@ export class MyShapes {
       drawPixel(ctx, xx, yy, "black", 2.5)
     }
 
-  }
+  } */
 
-  startNbc(size = 6, ctx, cornersOfShape) {
+/*   startNbc(size = 6, ctx, cornersOfShape) {
     let wannabeCorners = []
     for (const onePixel of cornersOfShape) {
       let pixel = this.zoomToPixel(onePixel, size, ctx, cornersOfShape)
@@ -191,7 +185,7 @@ export class MyShapes {
     }
 
     console.log(wannabeCorners);
-  }
+  } */
 
   removeClosestPixelAndChooseAvgPoint(wannabeCorners) {
     let tmpAaaa = wannabeCorners
@@ -420,29 +414,29 @@ export class MyShapes {
     return edgesFromCircle
   }
 
-  startYACF(shapeEdges, ctx) {
-    let idx = 0
-    this.yacfArray = []
-    let path = new Path2D()
-    this.yacf(shapeEdges[idx].x, shapeEdges[idx].y, shapeEdges, ctx, path)
-  }
+  // startYACF(shapeEdges, ctx) {
+  //   let idx = 0
+  //   this.yacfArray = []
+  //   let path = new Path2D()
+  //   this.yacf(shapeEdges[idx].x, shapeEdges[idx].y, shapeEdges, ctx, path)
+  // }
 
   // yet another corner finder
-  yacf(xx, yy, shapeEdges, ctx, path) {
+  // yacf(xx, yy, shapeEdges, ctx, path) {
 
-    for (let i = 0; i < this.n; i++, this.setupEFC.a += this.da) {
-      let x = Math.trunc(xx + this.setupEFC.r * Math.cos(this.setupEFC.a))
-      let y = Math.trunc(yy + this.setupEFC.r * Math.sin(this.setupEFC.a))
+  //   for (let i = 0; i < this.n; i++, this.setupEFC.a += this.da) {
+  //     let x = Math.trunc(xx + this.setupEFC.r * Math.cos(this.setupEFC.a))
+  //     let y = Math.trunc(yy + this.setupEFC.r * Math.sin(this.setupEFC.a))
 
-      this.yacfArray.push(
-        ...shapeEdges.filter(
-          v =>
-            this.isPointOnLine(v.x, v.y, xx, yy, x, y, ctx, path)
-        )
-      )
-    }
-    console.log(yacfArray);
-  }
+  //     this.yacfArray.push(
+  //       ...shapeEdges.filter(
+  //         v =>
+  //           this.isPointOnLine(v.x, v.y, xx, yy, x, y, ctx, path)
+  //       )
+  //     )
+  //   }
+  //   console.log(yacfArray);
+  // }
 
   isPointOnLine(cx, cy, x0, y0, x1, y1, ctx, path = new Path2D()) {
     path.moveTo(x0, y0);
@@ -487,7 +481,8 @@ export class MyShapes {
 
   pixelSpacing(processedPixels, ctx) {
     let spacedPointsArray = []
-    for (let idx = 0; idx < processedPixels.length; idx += 75) {
+    // for (let idx = 0; idx < processedPixels.length; idx += 75) {
+    for (let idx = 0; idx < processedPixels.length; idx += 45) {
       let edc = processedPixels[idx].pixel
 
       spacedPointsArray.push(processedPixels[idx])
