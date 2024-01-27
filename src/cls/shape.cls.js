@@ -19,11 +19,31 @@ export class MyShapes {
   shapeEdges = null
   shapeCorners = null
 
-  async shapeFinder(ctx, canvas, backgroundImage) {
-    ctx.drawImage(backgroundImage, 0, 0);
+  async shapeFinder(canvas) {
 
+    let __shapeEdges = JSON.parse(localStorage.getItem("shapeEdges"))
+    let __shapeCorners = JSON.parse(localStorage.getItem("shapeCorners"))
+    if (
+      __shapeEdges !== null &&
+      __shapeCorners !== null &&
+      (__shapeEdges.length > 0 || __shapeCorners.length > 0)
+
+    ) {
+      console.log("FROM CHACHE: shapeEdges, shapeCorners")
+      this.shapeEdges = __shapeEdges
+      this.shapeCorners = __shapeCorners
+      return
+    }
     let context = canvas.getContext('2d');
     let data = context.getImageData(0, 0, canvas.width, canvas.height).data;
+
+    // let myShapes = JSON.parse(localStorage.getItem("MyShapes"))
+    // if (myShapes === null) {
+    //   myShapes = new MyShapes()
+    //   await myShapes.shapeFinder(ctx, canvas, images[2])
+    //   // localStorage.setItem("MyShapes", myShapes);
+
+    // }
 
     let redShape = []
 
@@ -68,6 +88,8 @@ export class MyShapes {
 
     this.shapeEdges = redShapeEdges
     this.shapeCorners = shapeCorners
+    localStorage.setItem("shapeEdges", JSON.stringify(this.shapeEdges));
+    localStorage.setItem("shapeCorners", JSON.stringify(this.shapeCorners));
   }
 
   getShapeXAvg() {
@@ -120,72 +142,72 @@ export class MyShapes {
     this.shapeRight = this.shapeEdges.filter(v => v.y > redShapeXAvg)
   }
 
-/*   startYANbc(size = 6, ctx, canvas, cornersOfShape) {
+  /*   startYANbc(size = 6, ctx, canvas, cornersOfShape) {
 
-    let data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-    let wannabeCorners = []
-    for (const edges of cornersOfShape) {
-      if (this.zoomToPixel(edges, size, canvas, ctx, data))
-        wannabeCorners.push(edges)
-    }
-
-    let skipElements = []
-    let avgPixelArray = []
-    let xTol = 0.950
-    let yTol = 1.050
-    for (const edc of wannabeCorners) {
-      if (!skipElements.includes(edc)) {
-        let elements = wannabeCorners.filter(v => v.x / edc.x > xTol && v.x / edc.x < yTol && v.y / edc.y > xTol && v.y / edc.y < yTol)
-        skipElements.push(...elements)
-        let avgX = elements.map(v => v.x).reduce((p, c) => p + c) / elements.length
-        let avgY = elements.map(v => v.y).reduce((p, c) => p + c) / elements.length
-
-        let avgPixel = elements.reduce(function (prev, curr) {
-          return (
-            Math.abs(curr.x - avgX) < Math.abs(prev.x - avgX) ? curr : prev
-          )
-        });
-
-        let avgPixelY = elements.reduce(function (prev, curr) {
-          return (
-            Math.abs(curr.y - avgY) < Math.abs(prev.y - avgY) ? curr : prev
-          )
-        });
-
-        console.log(elements, avgX, avgY, "=>", avgPixel, avgPixelY);
-        avgPixelArray.push(avgPixel)
+      let data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      let wannabeCorners = []
+      for (const edges of cornersOfShape) {
+        if (this.zoomToPixel(edges, size, canvas, ctx, data))
+          wannabeCorners.push(edges)
       }
 
-    }
+      let skipElements = []
+      let avgPixelArray = []
+      let xTol = 0.950
+      let yTol = 1.050
+      for (const edc of wannabeCorners) {
+        if (!skipElements.includes(edc)) {
+          let elements = wannabeCorners.filter(v => v.x / edc.x > xTol && v.x / edc.x < yTol && v.y / edc.y > xTol && v.y / edc.y < yTol)
+          skipElements.push(...elements)
+          let avgX = elements.map(v => v.x).reduce((p, c) => p + c) / elements.length
+          let avgY = elements.map(v => v.y).reduce((p, c) => p + c) / elements.length
 
-    cornersOfShape.sort((a, b) => a.x - b.x)
+          let avgPixel = elements.reduce(function (prev, curr) {
+            return (
+              Math.abs(curr.x - avgX) < Math.abs(prev.x - avgX) ? curr : prev
+            )
+          });
 
-    console.log(avgPixelArray);
+          let avgPixelY = elements.reduce(function (prev, curr) {
+            return (
+              Math.abs(curr.y - avgY) < Math.abs(prev.y - avgY) ? curr : prev
+            )
+          });
 
-    for (let index = 0; index < cornersOfShape.length; index += 15) {
+          console.log(elements, avgX, avgY, "=>", avgPixel, avgPixelY);
+          avgPixelArray.push(avgPixel)
+        }
 
-      let [xx, yy] = [cornersOfShape[index].x, cornersOfShape[index].y]
-      drawPixel(ctx, xx, yy, "black", 2.5)
-    }
-
-  } */
-
-/*   startNbc(size = 6, ctx, cornersOfShape) {
-    let wannabeCorners = []
-    for (const onePixel of cornersOfShape) {
-      let pixel = this.zoomToPixel(onePixel, size, ctx, cornersOfShape)
-      if (pixel !== null) {
-        wannabeCorners.push(pixel)
       }
-    }
 
-    for (const pxl of wannabeCorners) {
-      if (pxl !== undefined)
-        drawPixel(ctx, pxl.x, pxl.y, "black", 4)
-    }
+      cornersOfShape.sort((a, b) => a.x - b.x)
 
-    console.log(wannabeCorners);
-  } */
+      console.log(avgPixelArray);
+
+      for (let index = 0; index < cornersOfShape.length; index += 15) {
+
+        let [xx, yy] = [cornersOfShape[index].x, cornersOfShape[index].y]
+        drawPixel(ctx, xx, yy, "black", 2.5)
+      }
+
+    } */
+
+  /*   startNbc(size = 6, ctx, cornersOfShape) {
+      let wannabeCorners = []
+      for (const onePixel of cornersOfShape) {
+        let pixel = this.zoomToPixel(onePixel, size, ctx, cornersOfShape)
+        if (pixel !== null) {
+          wannabeCorners.push(pixel)
+        }
+      }
+
+      for (const pxl of wannabeCorners) {
+        if (pxl !== undefined)
+          drawPixel(ctx, pxl.x, pxl.y, "black", 4)
+      }
+
+      console.log(wannabeCorners);
+    } */
 
   removeClosestPixelAndChooseAvgPoint(wannabeCorners) {
     let tmpAaaa = wannabeCorners

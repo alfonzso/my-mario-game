@@ -21,21 +21,29 @@ export function startMarioGame(oMario) {
 
       ctx.canvas.width = 1600;
       ctx.canvas.height = 900;
+      ctx.drawImage(images[2], 0, 0);
 
-      oMario.width = 113 / 2;
-      oMario.height = 113 / 2;
+      // oMario.width = 113 / 2;
+      // oMario.height = 113 / 2;
 
+      // let myShapes = JSON.parse(localStorage.getItem("MyShapes"))
+      // if (myShapes === null) {
       let myShapes = new MyShapes()
-      await myShapes.shapeFinder(ctx, canvas, images[2])
+      await myShapes.shapeFinder(canvas)
+      //   // localStorage.setItem("MyShapes", myShapes);
+      //   localStorage.setItem("MyShapes", JSON.stringify(myShapes));
+      // }
 
-      console.log(" -> myShapes.shapeEdges -> ", myShapes.shapeEdges);
+      console.log(" -> myShapes.shapeEdges -> ", myShapes, myShapes.shapeEdges);
 
-      let data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      // let data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
       let startTime = performance.now()
-      console.log(" -> myShapes.shapeEdges data-> ", data);
+      // console.log(" -> myShapes.shapeEdges data-> ", data);
 
       let shape_2d = new Shape2D()
-      shape_2d.setShapeAndDrawing(myShapes, { ctx, canvas, data })
+      shape_2d.setShapeAndDrawing(myShapes, {
+        ctx, canvas, data: ctx.getImageData(0, 0, canvas.width, canvas.height).data
+      })
       shape_2d.createShapeListFromBackground(myShapes.shapeEdges)
       shape_2d.drawPoints()
 

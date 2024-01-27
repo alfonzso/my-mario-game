@@ -15,15 +15,28 @@ class Mario {
   height = 64;
   xVelocity = 0;
   yVelocity = 0;
+  speed = 10;
   action = []
   // oldAction = []
   debugCode = ""
   xVelocityBeforeJump = 0
+  // MarioCenter = { x: 0, y: 0 }
 
   // Constructor to set up the initial state of Mario
   constructor(x, y) {
     this.x = x;
     this.y = y;
+    // this.MarioCenter = {
+    //   x: x + (this.width / 2),
+    //   y: y + (this.height / 2),
+    // }
+  }
+
+  getCenter() {
+    return {
+      x: this.x + (this.width / 2),
+      y: this.y + (this.height / 2),
+    }
   }
 
   addAction(doing) {
@@ -94,7 +107,7 @@ class Mario {
   }
 }
 
-export{
+export {
   Mario,
   MarioActions
 }

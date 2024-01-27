@@ -33,6 +33,13 @@ class Shape2D {
   createShapeListFromBackground(ShapeEdgesArray) {
     console.log(" -> myShapes.createShapeListFromBackground -> ");
 
+    let __shape2DList = JSON.parse(localStorage.getItem("shape2DList"))
+    if (__shape2DList !== null && __shape2DList.length > 0) {
+      console.log("FROM CHACHE: shape2DList")
+      this.shape2DList = __shape2DList
+      return
+    }
+
     let r = ShapeEdgesArray
     let processedPixels = []
     let nbcV2Idx = 0
@@ -57,6 +64,7 @@ class Shape2D {
       }
       rLen = r.length
     }
+    localStorage.setItem("shape2DList", JSON.stringify(this.shape2DList));
   }
 
   drawPoints() {
@@ -230,15 +238,15 @@ class Shape2D {
     u1 = (b - d) / c;
     u2 = (b + d) / c;
     // if (cr > d) {
-      // ctx.beginPath();
-      // // ctx.strokeStyle = 'red';
-      // ctx.strokeStyle = "#"+((1<<24)*Math.random()|0).toString(16);
-      // ctx.moveTo(x0, x1);
-      // ctx.lineTo(y0, y1);
-      // ctx.fillText(d, 50, 50)
-      // ctx.fillText(`${u1} -- ${u1 <= 1 && u1 >= 0}`, 200, 60)
-      // ctx.fillText(`${u2} -- ${u2 <= 1 && u2 >= 0}`, 200, 80)
-      // ctx.stroke();
+    // ctx.beginPath();
+    // // ctx.strokeStyle = 'red';
+    // ctx.strokeStyle = "#"+((1<<24)*Math.random()|0).toString(16);
+    // ctx.moveTo(x0, x1);
+    // ctx.lineTo(y0, y1);
+    // ctx.fillText(d, 50, 50)
+    // ctx.fillText(`${u1} -- ${u1 <= 1 && u1 >= 0}`, 200, 60)
+    // ctx.fillText(`${u2} -- ${u2 <= 1 && u2 >= 0}`, 200, 80)
+    // ctx.stroke();
     // }
     return true
   }
