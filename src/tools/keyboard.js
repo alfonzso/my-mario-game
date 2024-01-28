@@ -1,5 +1,5 @@
 // Set up keyboard input to control Mario
-export const startKeyboard = (oMario, MarioActions) => {
+export const startKeyboard = (oMario, MarioActions, myEngine) => {
 
   // let marioSpeed = 10
   document.addEventListener("keydown", event => {
@@ -39,6 +39,12 @@ export const startKeyboard = (oMario, MarioActions) => {
     if (event.code === "KeyR") {
       oMario.x = 160
       oMario.y = 500
+    }
+    if (event.code === "Digit1") {
+      myEngine.targetFps += 1
+    }
+    if (event.code === "Digit2") {
+      myEngine.targetFps -= 1
     }
   });
 

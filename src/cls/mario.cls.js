@@ -9,8 +9,13 @@ const MarioActions = {
 
 class Mario {
   yB = 0;
+
   x = 0;
   y = 0;
+
+  // x = 290;
+  // y = 833.5;
+
   width = 64;
   height = 64;
   xVelocity = 0;
@@ -18,6 +23,7 @@ class Mario {
   speed = 10;
   action = []
   // oldAction = []
+  // intersectX = null
   debugCode = ""
   xVelocityBeforeJump = 0
   // MarioCenter = { x: 0, y: 0 }
@@ -87,6 +93,7 @@ class Mario {
       this.yB = this.y
       this.x += this.xVelocity;
       this.y += this.yVelocity;
+
       if (this.yB > this.y) {
         this.addAction(MarioActions.goingUp)
       } else if (this.yB < this.y) {

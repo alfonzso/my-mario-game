@@ -1,5 +1,7 @@
 import { choseSpriteImage, drawPixel, fillTextMultiLine, prec, sleep } from "../tools/common.fn.js";
 
+let startTime = Date.now();
+
 export class MyEngine {
   frame = 0;
   numFrames = 0;
@@ -22,7 +24,8 @@ export class MyEngine {
     this.frameWidth = 113;
     this.frameHeight = 113;
     // this.frameHeight = 213;
-    this.frameInterval = 100;
+    this.targetFps = 32
+    // this.frameInterval = 1000 / this.targetFps;
 
     this.lastFrameTime = 0;
 
@@ -31,20 +34,46 @@ export class MyEngine {
     this.canvas = canvas
     this.images = images
 
+    this.frameCount = 0
 
     this.globalDataDump = null
 
+    this.currentFps = 0
   }
 
   setShape(myShapes) {
     this.shapes = myShapes
   }
 
-  gameLoop(timestamp) {
+  gameLoop(timestamp,) {
+    let now = Date.now();
+    const elapsedTime = timestamp - this.lastFrameTime;
+
+    // if (elapsedTime > this.frameInterval) {
+    // if (elapsedTime > 1000 / this.targetFps) {
+    if (elapsedTime > 100) {
+      this.frame = (this.frame + 1) % this.numFrames;
+      this.lastFrameTime = timestamp;
+
+      let sinceStart = now - startTime;
+      this.currentFps = Math.round(1000 / (sinceStart / ++this.frameCount) * 100) / 100;
+      // var currentFps = Math.round(1000 / (sinceStart / ++frameCount) * 100) / 100;
+
+    }
     this.inGameLoop(timestamp)
   }
 
-  inGameLoop(timestamp) {
+
+  calcDistance(x1, y1, x2, y2) {
+
+    // calcDistance = (x1, y1, x2, y2) => {
+    var a = x1 - x2;
+    var b = y1 - y2;
+    return Math.sqrt(a * a + b * b)
+    // return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+  }
+
+  inGameLoop(timestamp,) {
     // this.getCenter() = {
     //   x: this.oMario.x + (this.oMario.width / 2),
     //   y: this.oMario.y + (this.oMario.height / 2),
@@ -52,56 +81,13 @@ export class MyEngine {
     // console.log(
     //   this.oMario.x ,this.oMario.width, (this.oMario.width / 2)
     // )
-    const elapsedTime = timestamp - this.lastFrameTime;
 
-    if (elapsedTime > this.frameInterval) {
-      this.frame = (this.frame + 1) % this.numFrames;
-      this.lastFrameTime = timestamp;
-    }
-
-    this.oMario.move()
-
-    if (this.oMario.isDoNothing()) {
-      this.oMario.xVelocity = 0
-    }
-
-    if (this.oMario.yVelocity < 0 || this.oMario.yVelocity > 0) {
-      if (this.oMario.xVelocityBeforeJump === 0) {
-        this.oMario.xVelocityBeforeJump = this.oMario.xVelocity
-      }
-      this.oMario.xVelocity = this.oMario.xVelocityBeforeJump
-    }
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.drawImage(this.images[2], 0, 0);
 
+    this.oMario.move()
 
-    this.oMario.yVelocity += GRAVITY;
-
-
-    const calcDistance = (x1, y1, x2, y2) => {
-      var a = x1 - x2;
-      var b = y1 - y2;
-      return Math.sqrt(a * a + b * b)
-      // return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
-    }
-
-    // const inteceptCircleLineSeg = (x0, y0, x1, y1, cx, cy, cr) => {
-    //   var a, b, c, d, u1, u2, ret, retP1, retP2, v1, v2;
-    //   v1 = {};
-    //   v2 = {};
-    //   v1.x = x1 - x0;
-    //   v1.y = y1 - y0;
-    //   v2.x = x0 - cx;
-    //   v2.y = y0 - cy;
-    //   b = (v1.x * v2.x + v1.y * v2.y);
-    //   c = 2 * (v1.x * v1.x + v1.y * v1.y);
-    //   b *= -2;
-    //   d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - cr * cr));
-    //   u1 = (b - d) / c;
-    //   u2 = (b + d) / c;
-    //   return [u1 <= 1 && u1 >= 0, u2 <= 1 && u2 >= 0, x0 + (x1 - x0) * 0.5, y0 + (y1 - y0) * 0.5]
-    // }
 
     const inteceptCircleLineSeg = (A, B, C, cr) => {
       let b, c, d, u1, u2, v1, v2;
@@ -122,63 +108,258 @@ export class MyEngine {
       u2 = (b + d) / c;
       let avgX = A.x + (B.x - A.x) * 0.5
       let avgY = A.y + (B.y - A.y) * 0.5
-      return [u1 <= 1 && u1 >= 0, u2 <= 1 && u2 >= 0, avgX, avgY, A, B]
+      // console.log(u1, u2)
+      return [u1 <= 1 && u1 >= 0, u2 <= 1 && u2 >= 0, avgX, avgY, A, B, u1, u2]
     }
 
-    const res = this.shapes.shape2DList.map(shapes => {
+    const leftNright = this.shapes.shape2DList.map(shapes => {
       return shapes.allPixelArray
-        // .filter(shape => calcDistance(this.getCenter().x, this.getCenter().y, shape.pixel.x, shape.pixel.y) - 38 < 20)
-        // .filter(shape => {
-
-        //   const dist = calcDistance(this.getCenter().x, this.getCenter().y, shape.pixel.x, shape.pixel.y) - (38 + this.oMario.xVelocity)
-        //   return
-        // })
         .find(e => {
-          let dist = calcDistance(this.oMario.getCenter().x, this.oMario.getCenter().y, e.pixel.x, e.pixel.y) - 38
+          let dist = this.calcDistance(this.oMario.getCenter().x, this.oMario.getCenter().y, e.pixel.x, e.pixel.y) - 45
           let halfVx = Math.abs(this.oMario.xVelocity) / 2
-          // dist -= (38 - this.oMario.xVelocity)
-          // dist -= 38
-          if (dist < 20) {
-            // console.log(".............. ", dist)
-          }
           let intersect = dist >= -1 * halfVx && dist <= 1 * halfVx
+          // drawPixel(this.ctx, e.pixel.x, e.pixel.y, "purple", 5)
           if (intersect) {
             drawPixel(this.ctx, e.pixel.x, e.pixel.y, "purple", 5)
           }
           return intersect
         })
-      // .map(e => {
-      //   let dist = calcDistance(this.getCenter().x, this.getCenter().y, e.pixel.x, e.pixel.y)
-      //   dist -= (38 - this.oMario.xVelocity)
-      //   // dist -= 38
-      //   return dist >= -1 && dist <= 1
-      //   // return {
-      //   //   "x": v.pixel.x,
-      //   //   "y": v.pixel.y,
-      //   // }
-      // })
-    }).flat().filter(v => v !== undefined).length > 0
+    }).flat().filter(v => v !== undefined)
 
-    if (this.oMario.isRunningLeft() || this.oMario.isRunningRight()) {
-      // let trigger = res.includes(true)
-      // let trigger = di.includes(true)
-      // let trigger = 0
-      console.log("=====q= LEFT 1 ========> ", res, this.oMario.xVelocity)
-      if (res) {
-        this.oMario.x -= this.oMario.xVelocity
-        // debugger
-      }
+    // this.shapes.shape2DList.map(shapes => {
+    //   return shapes.allPixelArray
+    //     // .map(e => {
+    //     .reduce((current, next) => {
+    //       // let dist = this.calcDistance(
+    //       //   this.oMario.getCenter().x, this.oMario.getCenter().y, e.pixel.x, e.pixel.y
+    //       // ) - 10
+    //       const [u1Check, u2Check, avgX, avgY, A, B, u1, u2] = inteceptCircleLineSeg(
+    //         current.pixel, next.pixel, this.oMario.getCenter(), 36
+    //       )
+
+    //       // let halfVy = Math.abs(this.oMario.yVelocity)
+    //       // let halfVy = Math.abs(this.oMario.yVelocity) / 6
+    //       // let halfVy = 3
+    //       // let halfVy = 4
+    //       // let halfVy = 1
+    //       // let intersect = dist >= -1 * halfVy && dist <= 1 * halfVy
+
+    //       // debugger
+
+    //       // if (dist < 4) {
+    //       //   console.log("distdistdist ", dist)
+    //       // }
+    //       if (u1Check || u2Check) {
+    //         drawPixel(this.ctx, A.x, A.y, "white", 5)
+    //         drawPixel(this.ctx, avgX, avgY, "purple", 5)
+    //         drawPixel(this.ctx, B.x, B.y, "black", 5)
+
+    //         // console.log("fffffffffffffffffafaf", u1, u2)
+    //         if (this.oMario.isJumping()) {
+    //           this.oMario.xVelocityBeforeJump = 0
+    //           if (!(this.oMario.isRunningLeft() || this.oMario.isRunningRight())) {
+    //             this.oMario.xVelocity = 0
+    //           }
+    //           this.oMario.removeJumpAction()
+    //         }
+    //         this.oMario.yVelocity = 0;
+    //         this.oMario.y = avgY - this.oMario.height
+    //         // drawPixel(this.ctx, e.pixel.x, e.pixel.y, "purple", 5)
+    //         // console.log("distdistdist ", dist)
+    //         // return intersect
+    //         // return {
+    //         //   x: e.pixel.x,
+    //         //   y: e.pixel.y,
+    //         //   // dist
+    //         // }
+    //       }
+    //       // return undefined
+    //       // return {
+    //       //   x: e.pixel.x,
+    //       //   y: e.pixel.y,
+    //       //   // dist: 9999999
+    //       // }
+    //       return next
+    //     })
+    //   // .filter(v => v.dist > 0)
+    //   // .reduce((prev, curr) => prev.dist < curr.dist ? prev : curr)
+    //   // .reduce((prev, curr) => Math.min(prev.dist, curr.dist))
+    // })
+    // .flat().filter(v => v.dist !== 9999999)
+
+    const triggerLR = leftNright.length > 0
+    // const triggerUD = upNdown.length > 0
+    const triggerUD = false
+
+    // if (this.oMario.isRunningRight()) {
+    //   if (triggerLR) {
+    //     const hei = this.oMario.getCenter().y + (this.oMario.height * 1 / 3)
+    //     if (hei > leftNright[0].pixel.y) {
+    //       this.oMario.xVelocity = 0;
+    //       this.oMario.x = leftNright[0].pixel.x - this.oMario.width - 2
+    //     }
+    //   }
+    // }
+
+    // if (this.oMario.isRunningLeft()) {
+    //   if (triggerLR) {
+    //     const hei = this.oMario.getCenter().y + (this.oMario.height * 1 / 3)
+    //     if (hei > leftNright[0].pixel.y) {
+    //       this.oMario.xVelocity = -0;
+    //       this.oMario.x = leftNright[0].pixel.x
+    //     }
+    //   }
+    // }
+
+
+
+
+    // this.oMario.move()
+
+    if (this.oMario.isDoNothing()) {
+      this.oMario.xVelocity = 0
     }
+
+    if (this.oMario.yVelocity < 0 || this.oMario.yVelocity > 0) {
+      if (this.oMario.xVelocityBeforeJump === 0) {
+        this.oMario.xVelocityBeforeJump = this.oMario.xVelocity
+      }
+      this.oMario.xVelocity = this.oMario.xVelocityBeforeJump
+    }
+
+    this.oMario.yVelocity += GRAVITY;
+
+    this.shapes.shape2DList.map(shapes => {
+      return shapes.allPixelArray
+        .reduce((current, next) => {
+
+          const [u1Check, u2Check, avgX, avgY, A, B, u1, u2] = inteceptCircleLineSeg(
+            current.pixel, next.pixel, this.oMario.getCenter(), 36
+          )
+
+          if (u1Check || u2Check) {
+            drawPixel(this.ctx, A.x, A.y, "white", 5)
+            drawPixel(this.ctx, avgX, avgY, "purple", 5)
+            drawPixel(this.ctx, B.x, B.y, "black", 5)
+
+            if (this.oMario.isJumping()) {
+              this.oMario.xVelocityBeforeJump = 0
+              if (!(this.oMario.isRunningLeft() || this.oMario.isRunningRight())) {
+                this.oMario.xVelocity = 0
+              }
+              this.oMario.removeJumpAction()
+            }
+            const topOrBottom = Math.atan2(
+              avgY - this.oMario.getCenter().y, avgX - this.oMario.getCenter().x
+            ) * (180 / Math.PI)
+            this.oMario.yVelocity = 0;
+            // this.oMario.y = avgY + this.oMario.height
+
+            if (topOrBottom > 0) {
+              // this.oMario.y = Math.round(Y - this.oMario.height)
+              this.oMario.y = avgY - this.oMario.height
+            } else {
+              if (this.oMario.isGoingUp()) {
+                this.oMario.y = avgY + this.oMario.height
+              }
+              else {
+                // this.oMario.y = avgY - this.oMario.height;
+                // debugger
+              }
+            }
+          }
+          return next
+        })
+    })
+
+    if (triggerUD && true === false) {
+      // if (triggerUD) {
+      // let X = upNdown[0].pixel.x
+      // let Y = upNdown[0].pixel.y
+      // debugger
+      upNdown.forEach(e => {
+        let X = e.x
+        let Y = e.y
+
+        if (this.oMario.isJumping()) {
+          this.oMario.xVelocityBeforeJump = 0
+          if (!(this.oMario.isRunningLeft() || this.oMario.isRunningRight())) {
+            this.oMario.xVelocity = 0
+          }
+          this.oMario.removeJumpAction()
+        }
+
+
+        // drawPixel(this.ctx, X, Y, "purple", 5)
+        const topOrBottom = Math.atan2(
+          Y - this.oMario.getCenter().y, X - this.oMario.getCenter().x
+        ) * (180 / Math.PI)
+
+        // console.log(
+        //   "----> ", this.oMario.y
+        // )
+        // this.oMario.y = Y - this.oMario.height - 4
+        // console.log(
+        //   this.oMario.y, Y, Y - this.oMario.height
+        // )
+        this.oMario.yVelocity = 0;
+
+        if (topOrBottom > 0) {
+          // let dist = this.calcDistance(this.oMario.getCenter().x, this.oMario.getCenter().y, X, Y) - 38
+          // let halfVy = 1
+          // let intersect = dist >= -1 * halfVy && dist <= 1 * halfVy
+          // let intersect = dist > -0.45 && dist < 0.45
+          // let intersect = dist === 1
+          // debugger
+          // if (intersect) {
+          // console.log(dist, this.oMario.y, Y, this.oMario.height)
+          this.oMario.y = Math.round(Y - this.oMario.height)
+          // console.log(this.oMario.y)
+          // }
+        } else {
+          if (this.oMario.isGoingUp()) {
+            // this.oMario.y = Y + this.oMario.height;
+            this.oMario.y = Y + 10
+            // this.oMario.y = Y;
+          }
+          else {
+            this.oMario.y = Y - this.oMario.height;
+          }
+        }
+      });
+
+
+    }
+
+    // const inteceptCircleLineSeg = (x0, y0, x1, y1, cx, cy, cr) => {
+    //   var a, b, c, d, u1, u2, ret, retP1, retP2, v1, v2;
+    //   v1 = {};
+    //   v2 = {};
+    //   v1.x = x1 - x0;
+    //   v1.y = y1 - y0;
+    //   v2.x = x0 - cx;
+    //   v2.y = y0 - cy;
+    //   b = (v1.x * v2.x + v1.y * v2.y);
+    //   c = 2 * (v1.x * v1.x + v1.y * v1.y);
+    //   b *= -2;
+    //   d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - cr * cr));
+    //   u1 = (b - d) / c;
+    //   u2 = (b + d) / c;
+    //   return [u1 <= 1 && u1 >= 0, u2 <= 1 && u2 >= 0, x0 + (x1 - x0) * 0.5, y0 + (y1 - y0) * 0.5]
+    // }
+
+
+
 
     // if (JSON.stringify(res) !== JSON.stringify(this.globalDataDump)) {
     //   console.log(res)
-      // res.forEach(e => {
-      //   let dist = calcDistance(this.getCenter().x, this.getCenter().y, e.x, e.y)
-      //   console.log(
-      //     e, this.getCenter().x, this.getCenter().y, this.oMario.x, this.oMario.y,
-      //     dist,
-      //     dist - 38,
-      //   )
+    // res.forEach(e => {
+    //   let dist = calcDistance(this.getCenter().x, this.getCenter().y, e.x, e.y)
+    //   console.log(
+    //     e, this.getCenter().x, this.getCenter().y, this.oMario.x, this.oMario.y,
+    //     dist,
+    //     dist - 38,
+    //   )
     //   // });
     // }
     // this.globalDataDump = res
@@ -244,7 +425,7 @@ export class MyEngine {
 
     this.ctx.beginPath();
     this.ctx.arc(
-      this.oMario.getCenter().x, this.oMario.getCenter().y, 38, 0, 2 * Math.PI
+      this.oMario.getCenter().x, this.oMario.getCenter().y, 45, 0, 2 * Math.PI
     );
     this.ctx.stroke();
     /*
@@ -382,6 +563,8 @@ export class MyEngine {
       code: ${this.oMario.debugCode}
       GRAVITY: ${prec(GRAVITY)}
       Frame: ${this.frame}
+      targetFPS: ${this.targetFps}
+      FPS: ${this.currentFps}
       Mario X: ${prec(this.oMario.x)}
       Mario Y: ${prec(this.oMario.y)}
       Action: ${marioActions}

@@ -3,6 +3,9 @@ import { loadImages } from "./tools/image.loader.js";
 import { MyShapes } from "./cls/shape.cls.js";
 import { Shape2D } from "./cls/2Dshape.js";
 
+import { startKeyboard } from "./tools/keyboard.js";
+import { MarioActions } from "./cls/mario.cls.js";
+
 export function startMarioGame(oMario) {
   window.onload = async () => {
 
@@ -29,7 +32,7 @@ export function startMarioGame(oMario) {
       // let myShapes = JSON.parse(localStorage.getItem("MyShapes"))
       // if (myShapes === null) {
       let myShapes = new MyShapes()
-      await myShapes.shapeFinder(canvas)
+      await myShapes.shapeFinder(canvas, images[2].src)
       //   // localStorage.setItem("MyShapes", myShapes);
       //   localStorage.setItem("MyShapes", JSON.stringify(myShapes));
       // }
@@ -44,13 +47,15 @@ export function startMarioGame(oMario) {
       shape_2d.setShapeAndDrawing(myShapes, {
         ctx, canvas, data: ctx.getImageData(0, 0, canvas.width, canvas.height).data
       })
-      shape_2d.createShapeListFromBackground(myShapes.shapeEdges)
+      shape_2d.createShapeListFromBackground(myShapes.shapeEdges, images[2].src)
       shape_2d.drawPoints()
 
       let endTime = performance.now()
       console.log(`Call to doSomething took ${endTime - startTime} milliseconds`)
 
       let myEngine = new MyEngine(oMario, ctx, canvas, images)
+      startKeyboard(oMario, MarioActions, myEngine);
+
       myEngine.setShape(shape_2d)
 
       function gameLoopWrapper(timestamp) {

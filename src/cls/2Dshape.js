@@ -1,4 +1,4 @@
-import { drawPixel } from "../tools/common.fn.js"
+import { drawPixel, crc32 } from "../tools/common.fn.js"
 
 class Shape2D {
   shape2DList = []
@@ -30,10 +30,10 @@ class Shape2D {
     return this
   }
 
-  createShapeListFromBackground(ShapeEdgesArray) {
+  createShapeListFromBackground(ShapeEdgesArray, imgName) {
     console.log(" -> myShapes.createShapeListFromBackground -> ");
 
-    let __shape2DList = JSON.parse(localStorage.getItem("shape2DList"))
+    let __shape2DList = JSON.parse(localStorage.getItem(crc32(imgName) + ":shape2DList"))
     if (__shape2DList !== null && __shape2DList.length > 0) {
       console.log("FROM CHACHE: shape2DList")
       this.shape2DList = __shape2DList
@@ -64,7 +64,7 @@ class Shape2D {
       }
       rLen = r.length
     }
-    localStorage.setItem("shape2DList", JSON.stringify(this.shape2DList));
+    localStorage.setItem(crc32(imgName) + ":shape2DList", JSON.stringify(this.shape2DList));
   }
 
   drawPoints() {

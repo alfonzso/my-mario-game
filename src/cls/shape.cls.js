@@ -1,6 +1,6 @@
 import {
   drawPixel, fillTextMultiLine, getHSLFromBigIndex, isRed, rgb2hsl,
-  xyToBigIndex
+  xyToBigIndex, crc32
 } from "../tools/common.fn.js";
 import { MyPixels, OrderedMyPixel } from "./mypixel.cls.js";
 
@@ -19,10 +19,10 @@ export class MyShapes {
   shapeEdges = null
   shapeCorners = null
 
-  async shapeFinder(canvas) {
+  async shapeFinder(canvas, imgName) {
 
-    let __shapeEdges = JSON.parse(localStorage.getItem("shapeEdges"))
-    let __shapeCorners = JSON.parse(localStorage.getItem("shapeCorners"))
+    let __shapeEdges = JSON.parse(localStorage.getItem(crc32(imgName) + ":shapeEdges"))
+    let __shapeCorners = JSON.parse(localStorage.getItem(crc32(imgName) + ":shapeCorners"))
     if (
       __shapeEdges !== null &&
       __shapeCorners !== null &&
@@ -36,14 +36,6 @@ export class MyShapes {
     }
     let context = canvas.getContext('2d');
     let data = context.getImageData(0, 0, canvas.width, canvas.height).data;
-
-    // let myShapes = JSON.parse(localStorage.getItem("MyShapes"))
-    // if (myShapes === null) {
-    //   myShapes = new MyShapes()
-    //   await myShapes.shapeFinder(ctx, canvas, images[2])
-    //   // localStorage.setItem("MyShapes", myShapes);
-
-    // }
 
     let redShape = []
 
@@ -88,8 +80,8 @@ export class MyShapes {
 
     this.shapeEdges = redShapeEdges
     this.shapeCorners = shapeCorners
-    localStorage.setItem("shapeEdges", JSON.stringify(this.shapeEdges));
-    localStorage.setItem("shapeCorners", JSON.stringify(this.shapeCorners));
+    localStorage.setItem(crc32(imgName) + ":shapeEdges", JSON.stringify(this.shapeEdges));
+    localStorage.setItem(crc32(imgName) + ":shapeCorners", JSON.stringify(this.shapeCorners));
   }
 
   getShapeXAvg() {
@@ -504,9 +496,7 @@ export class MyShapes {
   pixelSpacing(processedPixels, ctx) {
     let spacedPointsArray = []
     // for (let idx = 0; idx < processedPixels.length; idx += 75) {
-    for (let idx = 0; idx < processedPixels.length; idx += 45) {
-      let edc = processedPixels[idx].pixel
-
+    for (let idx = 0; idx < processedPixels.length; idx += 25) {
       spacedPointsArray.push(processedPixels[idx])
     }
     return spacedPointsArray
