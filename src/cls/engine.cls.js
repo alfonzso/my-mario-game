@@ -64,11 +64,12 @@ export class MyEngine {
   }
 
 
-  calcDistance(x1, y1, x2, y2) {
+  // calcDistance(x1, y1, x2, y2) {
+  calcDistance(A, B) {
 
     // calcDistance = (x1, y1, x2, y2) => {
-    var a = x1 - x2;
-    var b = y1 - y2;
+    var a = A.x - B.x;
+    var b = A.y - B.y;
     return Math.sqrt(a * a + b * b)
     // return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
   }
@@ -112,19 +113,19 @@ export class MyEngine {
       return [u1 <= 1 && u1 >= 0, u2 <= 1 && u2 >= 0, avgX, avgY, A, B, u1, u2]
     }
 
-    const leftNright = this.shapes.shape2DList.map(shapes => {
-      return shapes.allPixelArray
-        .find(e => {
-          let dist = this.calcDistance(this.oMario.getCenter().x, this.oMario.getCenter().y, e.pixel.x, e.pixel.y) - 45
-          let halfVx = Math.abs(this.oMario.xVelocity) / 2
-          let intersect = dist >= -1 * halfVx && dist <= 1 * halfVx
-          // drawPixel(this.ctx, e.pixel.x, e.pixel.y, "purple", 5)
-          if (intersect) {
-            drawPixel(this.ctx, e.pixel.x, e.pixel.y, "purple", 5)
-          }
-          return intersect
-        })
-    }).flat().filter(v => v !== undefined)
+    // const leftNright = this.shapes.shape2DList.map(shapes => {
+    //   return shapes.allPixelArray
+    //     .find(e => {
+    //       let dist = this.calcDistance(this.oMario.getCenter().x, this.oMario.getCenter().y, e.pixel.x, e.pixel.y) - 45
+    //       let halfVx = Math.abs(this.oMario.xVelocity) / 2
+    //       let intersect = dist >= -1 * halfVx && dist <= 1 * halfVx
+    //       // drawPixel(this.ctx, e.pixel.x, e.pixel.y, "purple", 5)
+    //       if (intersect) {
+    //         drawPixel(this.ctx, e.pixel.x, e.pixel.y, "purple", 5)
+    //       }
+    //       return intersect
+    //     })
+    // }).flat().filter(v => v !== undefined)
 
     // this.shapes.shape2DList.map(shapes => {
     //   return shapes.allPixelArray
@@ -187,7 +188,8 @@ export class MyEngine {
     // })
     // .flat().filter(v => v.dist !== 9999999)
 
-    const triggerLR = leftNright.length > 0
+    // const triggerLR = leftNright.length > 0
+    const triggerLR = false
     // const triggerUD = upNdown.length > 0
     const triggerUD = false
 
@@ -233,14 +235,23 @@ export class MyEngine {
       return shapes.allPixelArray
         .reduce((current, next) => {
 
+
+          // let nextP = this.calcDistance(this.oMario.getCenter(), next.pixel) - 36
           const [u1Check, u2Check, avgX, avgY, A, B, u1, u2] = inteceptCircleLineSeg(
-            current.pixel, next.pixel, this.oMario.getCenter(), 36
+            current.pixel, next.pixel, this.oMario.getCenter(), 32
           )
 
           if (u1Check || u2Check) {
+            let distA = this.calcDistance(this.oMario.getCenter(), A) - 32
+            let distB = this.calcDistance(this.oMario.getCenter(), B) - 32
+
+            // if (distA <= -6 || distA >= 6) return next
+            // if (distB <= -6 || distB >= 6) return next
+
             drawPixel(this.ctx, A.x, A.y, "white", 5)
             drawPixel(this.ctx, avgX, avgY, "purple", 5)
             drawPixel(this.ctx, B.x, B.y, "black", 5)
+            drawPixel(this.ctx, this.oMario.getCenter().x, this.oMario.getCenter().y, "black", 5)
 
             if (this.oMario.isJumping()) {
               this.oMario.xVelocityBeforeJump = 0
@@ -252,12 +263,46 @@ export class MyEngine {
             const topOrBottom = Math.atan2(
               avgY - this.oMario.getCenter().y, avgX - this.oMario.getCenter().x
             ) * (180 / Math.PI)
+
+            // const white = Math.atan2(
+            //   A.y - this.oMario.getCenter().y, A.x - this.oMario.getCenter().x
+            // ) * (180 / Math.PI)
+
+            // const black = Math.atan2(
+            //   B.y - this.oMario.getCenter().y, B.x - this.oMario.getCenter().x
+            // ) * (180 / Math.PI)
+
             this.oMario.yVelocity = 0;
+            // this.oMario.xVelocity = 0;
+
             // this.oMario.y = avgY + this.oMario.height
 
-            if (topOrBottom > 0) {
-              // this.oMario.y = Math.round(Y - this.oMario.height)
-              this.oMario.y = avgY - this.oMario.height
+            // right side angle
+            if (topOrBottom >= -40 && topOrBottom <= 40 && this.oMario.isRunningRight()) {
+              // if (topOrBottom >= -40 && topOrBottom <= 40) {
+              this.oMario.xVelocity = 0;
+              // if ( distA > 5 || distB > 5){
+              //   debugger
+              // }
+              console.log("RIGHT")
+              // this.oMario.x = avgX - this.oMario.width - this.oMario.xVelocity
+              this.oMario.x = avgX - (this.oMario.width + 5)
+            }
+
+            // left side angle
+            // chatGpt: if (topOrBottom <= -135 % 180 || topOrBottom >= 135 % 180) {
+            if ((topOrBottom <= -130 && topOrBottom >= -175) || (topOrBottom >= 130 && topOrBottom <= 175)) {
+              console.log("LEFT")
+              this.oMario.xVelocity = 0;
+              this.oMario.x = avgX + 5
+            }
+            // bottom angle
+            if (topOrBottom >= 40 && topOrBottom <= 130) {
+              this.oMario.y = avgY - this.oMario.height  + 1
+              // this.oMario.x = avgX - this.oMario.width
+              // this.oMario.xVelocity = 0;
+
+              console.log("DOWN")
             } else {
               if (this.oMario.isGoingUp()) {
                 this.oMario.y = avgY + this.oMario.height
@@ -271,65 +316,6 @@ export class MyEngine {
           return next
         })
     })
-
-    if (triggerUD && true === false) {
-      // if (triggerUD) {
-      // let X = upNdown[0].pixel.x
-      // let Y = upNdown[0].pixel.y
-      // debugger
-      upNdown.forEach(e => {
-        let X = e.x
-        let Y = e.y
-
-        if (this.oMario.isJumping()) {
-          this.oMario.xVelocityBeforeJump = 0
-          if (!(this.oMario.isRunningLeft() || this.oMario.isRunningRight())) {
-            this.oMario.xVelocity = 0
-          }
-          this.oMario.removeJumpAction()
-        }
-
-
-        // drawPixel(this.ctx, X, Y, "purple", 5)
-        const topOrBottom = Math.atan2(
-          Y - this.oMario.getCenter().y, X - this.oMario.getCenter().x
-        ) * (180 / Math.PI)
-
-        // console.log(
-        //   "----> ", this.oMario.y
-        // )
-        // this.oMario.y = Y - this.oMario.height - 4
-        // console.log(
-        //   this.oMario.y, Y, Y - this.oMario.height
-        // )
-        this.oMario.yVelocity = 0;
-
-        if (topOrBottom > 0) {
-          // let dist = this.calcDistance(this.oMario.getCenter().x, this.oMario.getCenter().y, X, Y) - 38
-          // let halfVy = 1
-          // let intersect = dist >= -1 * halfVy && dist <= 1 * halfVy
-          // let intersect = dist > -0.45 && dist < 0.45
-          // let intersect = dist === 1
-          // debugger
-          // if (intersect) {
-          // console.log(dist, this.oMario.y, Y, this.oMario.height)
-          this.oMario.y = Math.round(Y - this.oMario.height)
-          // console.log(this.oMario.y)
-          // }
-        } else {
-          if (this.oMario.isGoingUp()) {
-            // this.oMario.y = Y + this.oMario.height;
-            this.oMario.y = Y + 10
-            // this.oMario.y = Y;
-          }
-          else {
-            this.oMario.y = Y - this.oMario.height;
-          }
-        }
-      });
-
-
-    }
 
     // const inteceptCircleLineSeg = (x0, y0, x1, y1, cx, cy, cr) => {
     //   var a, b, c, d, u1, u2, ret, retP1, retP2, v1, v2;
@@ -425,7 +411,7 @@ export class MyEngine {
 
     this.ctx.beginPath();
     this.ctx.arc(
-      this.oMario.getCenter().x, this.oMario.getCenter().y, 45, 0, 2 * Math.PI
+      this.oMario.getCenter().x, this.oMario.getCenter().y, 36, 0, 2 * Math.PI
     );
     this.ctx.stroke();
     /*

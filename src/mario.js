@@ -13,9 +13,9 @@ export function startMarioGame(oMario) {
       "./backgrounds/mario_sprite_sheet.png",
       // "./backgrounds/mario_sprite_sheet_orig_edited.png",
       "./backgrounds/mario_sprite_sheet_flipped.png",
-      // "./backgrounds/mario.bg.moreshape.png"
+      "./backgrounds/mario.bg.moreshape.png"
       // "./backgrounds/mario.bg.bkp.v1.png"
-      "./backgrounds/mario.bg.moreshape.v1.png"
+      // "./backgrounds/mario.bg.moreshape.v1.png"
     ]
 
     loadImages(myImages).then(async images => {
